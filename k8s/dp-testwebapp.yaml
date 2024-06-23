@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: testwebapp
+spec:
+    replicas: 4
+    selector:
+        matchLabels:
+            env: prod
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                env: prod
+        spec:
+            containers:
+              - name: test-web-app
+                image: zhukoffg/testwebapp:20240615113704
+                ports:
+                  - name: web
+                    containerPort: 8080
