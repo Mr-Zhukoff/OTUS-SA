@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace TestWebApp.Controllers
 {
@@ -8,17 +7,27 @@ namespace TestWebApp.Controllers
     public class HealthController : ControllerBase
     {
         private readonly ILogger<HealthController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HealthController(ILogger<HealthController> logger)
+        public HealthController(ILogger<HealthController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
         public ActionResult Get()
         {
-            _logger.LogInformation("Health status requested");
-            return Ok(new { status = "OK" });
+            
+            _logger.LogInformation($"Health status requested {Environment.MachineName}");
+            return Ok(new { 
+                status = "OK",
+                host = _httpContextAccessor?.HttpContext?.Request.Host.Value,
+                method = _httpContextAccessor?.HttpContext?.Request.Method,
+                machinename = Environment.MachineName,
+                osversion = Environment.OSVersion.VersionString,
+                processid = Environment.ProcessId
+            });
         }
     }
 }
