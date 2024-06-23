@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
 

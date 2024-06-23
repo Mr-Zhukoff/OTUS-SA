@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Configuration;
 using UserServiceAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
