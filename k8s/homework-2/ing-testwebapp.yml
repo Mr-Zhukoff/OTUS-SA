@@ -3,14 +3,15 @@ kind: Ingress
 metadata:
   name: ingress
 spec:
+  ingressClassName: nginx
   rules:
   - host: arch.homework
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
-            name: hello-world-service-single
+            name: testwebapp
             port:
               number: 80

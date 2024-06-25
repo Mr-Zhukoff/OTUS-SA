@@ -5,7 +5,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: testwebapp
+    env: prod
   ports:
   - port: 80
     protocol: TCP
