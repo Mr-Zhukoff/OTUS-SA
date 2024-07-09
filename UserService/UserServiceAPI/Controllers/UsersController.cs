@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
 
@@ -24,14 +25,39 @@ namespace UserServiceAPI.Controllers
         [HttpGet("health")]
         public ActionResult Health()
         {
-            _logger.LogInformation($"Health status requested {Environment.MachineName}");
-            return Ok(new
+            try
             {
-                status = "OK",
-                machinename = Environment.MachineName,
-                osversion = Environment.OSVersion.VersionString,
-                processid = Environment.ProcessId
-            });
+                _logger.LogInformation($"Health status requested {Environment.MachineName}");
+                _context.Database.OpenConnection();
+                return Ok(new
+                {
+                    status = "OK",
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId
+                });
+            }
+            //catch (Npgsql.NpgsqlException pgex)
+            //{
+            //    return Ok(new
+            //    {
+            //        status = "BAD",
+            //        machinename = Environment.MachineName,
+            //        osversion = Environment.OSVersion.VersionString,
+            //        processid = Environment.ProcessId,
+            //        message = pgex.Message
+            //    });
+            //}
+            catch (Exception ex) {
+                return Ok(new
+                {
+                    status = "BAD",
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    message = ex.Message
+                });
+            }
         }
 
         // GET: api/users

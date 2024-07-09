@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 using UserServiceAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Starting the metrics exporter, will expose "/metrics"
+app.UseMetricServer();
+
+app.UseHttpMetrics(options =>
+{
+    options.AddCustomLabel("host", context => context.Request.Host.Host);
+});
 
 app.UseAuthorization();
 
