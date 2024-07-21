@@ -10,16 +10,26 @@ namespace UserServiceAPI.Models
         [Column("id")]
         [SwaggerSchema(ReadOnly = true)]
         public int Id { get; set; }
+
         [Column("firstname")]
-        [Required]
         public string FirstName { get; set; }
+
         [Column("lastname")]
-        [Required]
         public string LastName { get; set; }
+
         [Column("middlename")]
         public string MiddleName { get; set; }
+
         [Column("email")]
         [Required]
         public string Email { get; set; }
+
+        [Column("salt")]
+        [SwaggerSchema(ReadOnly = true)]
+        public string PasswordSalt { get; set; }
+
+        [Column("hash")]
+        [SwaggerSchema(ReadOnly = true)]
+        public string PasswordHash { get; set; }
     }
 }
