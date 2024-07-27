@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using UserServiceAPI.Data;
@@ -8,6 +9,7 @@ using UserServiceAPI.Models;
 
 namespace UserServiceAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -22,6 +24,7 @@ namespace UserServiceAPI.Controllers
         }
 
         // healthcheck
+        [AllowAnonymous]
         [HttpGet("health")]
         public ActionResult Health()
         {

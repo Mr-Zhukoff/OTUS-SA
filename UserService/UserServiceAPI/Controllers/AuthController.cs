@@ -31,11 +31,16 @@ namespace UserServiceAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([FromBody] LoginRequest loginRequest)
+        public IActionResult Login([FromBody] LoginForm loginForm)
         {
-            //your logic for login process
-            //If login usrename and password are correct then proceed to generate token
+            var existingUser = _context.Users.FirstOrDefault(x => x.Email.ToLower() == loginForm.Email.ToLower());
+            if (existingUser == null) {
+                return BadRequest($"Пользователь с email {loginForm.Email} не существует!");
+            }
 
+            if (!CheckPassword(loginForm.Password, existingUser)) {
+                return BadRequest($"Пароль не правильный!");
+            }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -51,18 +56,27 @@ namespace UserServiceAPI.Controllers
             return Ok(token);
         }
         [HttpPost]
-        public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
+        public async Task<ActionResult> Register([FromBody] RegisterForm registerForm)
         {
             var user = new User
             {
-                Email = registerRequest.Email,
+                FirstName = registerForm.FirstName,
+                LastName = registerForm.LastName,
+                MiddleName = registerForm.MiddleName,
+                Email = registerForm.Email,
                 PasswordSalt = PasswordHasher.GenerateSalt()
             };
-            user.PasswordHash = PasswordHasher.ComputeHash(registerRequest.Password, user.PasswordSalt, _pepper);
+            user.PasswordHash = PasswordHasher.ComputeHash(registerForm.Password, user.PasswordSalt, _pepper);
             var result = _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var result2 = await _context.SaveChangesAsync();
 
-            return Ok(result);
+            return Ok(result.ToString());
+        }
+
+        private bool CheckPassword(string pwd, User user)
+        {
+            var passwordHash = PasswordHasher.ComputeHash(pwd, user.PasswordSalt, _pepper);
+            return (user.PasswordHash == passwordHash);
         }
     }
 }

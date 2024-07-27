@@ -1,0 +1,1290 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\Zhuko> docker version
+Client:
+ Cloud integration: v1.0.35+desktop.11
+ Version:           25.0.3
+ API version:       1.44
+ Go version:        go1.21.6
+ Git commit:        4debf41
+ Built:             Tue Feb  6 21:13:02 2024
+ OS/Arch:           windows/amd64
+ Context:           default
+
+Server: Docker Desktop 4.28.0 (139021)
+ Engine:
+  Version:          25.0.3
+  API version:      1.44 (minimum version 1.24)
+  Go version:       go1.21.6
+  Git commit:       f417435
+  Built:            Tue Feb  6 21:14:25 2024
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.28
+  GitCommit:        ae07eda36dd25f8a1b98dfbf587313b99c0190bb
+ runc:
+  Version:          1.1.12
+  GitCommit:        v1.1.12-0-g51d5e94
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+PS C:\Users\Zhuko> S:
+PS S:\> ls
+
+
+    Directory: S:\
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        25.05.2024     22:44                Games
+d-----        04.06.2024     21:00                GitHub
+d-----        17.11.2020     10:15                GitLab
+d-----        17.12.2020     12:08                Program Files
+d-----        21.05.2024     21:59                SteamLibrary
+d-----        26.10.2020     13:51                TEMP
+d-----        07.04.2024     12:52                TFS
+d-----        12.06.2024     11:04                Vortex Mods
+d-----        25.01.2021     15:03                WindowsApps
+d-----        17.12.2020     12:08                WpSystem
+d-----        26.04.2021     22:45                Yolva
+d-----        16.01.2022     22:41                Zhukov
+-a----        05.09.2021     22:19          12610 CICDDemo.zip
+-a----        05.09.2021     22:25          12028 ReleaseLogs_6.zip
+-a----        20.09.2020     22:46      438266253 TFS.zip
+-a----        04.10.2020     14:09             88 token.txt
+
+
+PS S:\> cd .\GitHub\OTUS-SA\
+PS S:\GitHub\OTUS-SA> ls
+
+
+    Directory: S:\GitHub\OTUS-SA
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        04.06.2024     21:02                .github
+d-----        17.06.2024     21:09                k8s
+d-----        13.06.2024     20:11                TestWebApp
+d-----        23.06.2024     23:36                UserService
+-a----        04.06.2024     21:01           7258 .gitignore
+-a----        25.06.2024     20:37            613 README.md
+
+
+PS S:\GitHub\OTUS-SA> cd k8s
+PS S:\GitHub\OTUS-SA\k8s> ls
+
+
+    Directory: S:\GitHub\OTUS-SA\k8s
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        15.06.2024     20:52                .vs
+-a----        23.06.2024     22:58            506 dp-testwebapp.yaml
+-a----        06.06.2024     21:53            250 hosts
+-a----        16.06.2024     23:45            233 ingress-single.yaml
+-a----        17.06.2024     21:59            314 ingress.yml
+-a----        15.06.2024     12:32            166 nginx_ingress.yaml
+-a----        16.06.2024     23:35            185 svc-testwebapp.yaml
+
+
+PS S:\GitHub\OTUS-SA\k8s> docker version
+Client:
+ Cloud integration: v1.0.35+desktop.11
+ Version:           25.0.3
+ API version:       1.44
+ Go version:        go1.21.6
+ Git commit:        4debf41
+ Built:             Tue Feb  6 21:13:02 2024
+ OS/Arch:           windows/amd64
+ Context:           default
+
+Server: Docker Desktop 4.28.0 (139021)
+ Engine:
+  Version:          25.0.3
+  API version:      1.44 (minimum version 1.24)
+  Go version:       go1.21.6
+  Git commit:       f417435
+  Built:            Tue Feb  6 21:14:25 2024
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.28
+  GitCommit:        ae07eda36dd25f8a1b98dfbf587313b99c0190bb
+ runc:
+  Version:          1.1.12
+  GitCommit:        v1.1.12-0-g51d5e94
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+PS S:\GitHub\OTUS-SA\k8s> kubectl version
+Client Version: v1.29.1
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+E0625 21:24:10.647507   38016 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:10.659460   38016 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:10.660486   38016 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:10.660998   38016 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:10.665670   38016 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> kubectl get no
+E0625 21:24:24.591947   18792 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:24.604358   18792 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:24.605405   18792 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:24.606425   18792 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:24.606935   18792 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> kubectl get node
+E0625 21:24:33.169306    8440 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:33.181730    8440 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:33.182243    8440 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:33.190127    8440 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:24:33.190644    8440 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+E0625 21:26:02.561104   27380 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:02.572799   27380 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:02.573800   27380 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:02.583834   27380 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:02.584834   27380 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+E0625 21:26:06.154738   38372 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:06.167051   38372 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:06.168051   38372 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:06.184579   38372 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+E0625 21:26:06.184579   38372 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refusedit.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machineactively refused it.
+PS S:\GitHub\OTUS-SA\k8s> docker version
+Client:
+ Version:           26.1.4
+ API version:       1.45
+ Go version:        go1.21.11
+ Git commit:        5650f9b
+ Built:             Wed Jun  5 11:29:54 2024
+ OS/Arch:           windows/amd64
+ Context:           desktop-linux
+
+Server: Docker Desktop 4.31.1 (153621)
+ Engine:
+  Version:          26.1.4
+  API version:      1.45 (minimum version 1.24)
+  Go version:       go1.21.11
+  Git commit:       de5c9cf
+  Built:            Wed Jun  5 11:29:22 2024
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.33
+  GitCommit:        d2d58213f83a351ca8f528a95fbd145f5654e957
+ runc:
+  Version:          1.1.12
+  GitCommit:        v1.1.12-0-g51d5e94
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+PS S:\GitHub\OTUS-SA\k8s> kubectl version
+Client Version: v1.29.2
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Server Version: v1.29.2
+PS S:\GitHub\OTUS-SA\k8s> kubectl get node
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   56s   v1.29.2
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   59s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+No resources found in default namespace.
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f dp-testwebapp.yml
+deployment.apps/testwebapp created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                         READY   STATUS    RESTARTS   AGE
+testwebapp-9c86c5f55-49cnd   1/1     Running   0          54s
+testwebapp-9c86c5f55-8hsn9   1/1     Running   0          54s
+testwebapp-9c86c5f55-nc65d   1/1     Running   0          54s
+testwebapp-9c86c5f55-xkm88   1/1     Running   0          54s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   33m
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f svc-testwebapp.yml
+service/testwebapp created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   35m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    21s
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f ing-testwebapp.yml
+ingress.networking.k8s.io/ingress created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get ing
+NAME      CLASS    HOSTS           ADDRESS   PORTS   AGE
+ingress   <none>   arch.homework             80      5s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   38m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    3m35s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get ing
+NAME      CLASS    HOSTS           ADDRESS   PORTS   AGE
+ingress   <none>   arch.homework             80      19s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   38m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    3m42s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   38m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    3m49s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                         READY   STATUS    RESTARTS   AGE
+testwebapp-9c86c5f55-49cnd   1/1     Running   0          10m
+testwebapp-9c86c5f55-8hsn9   1/1     Running   0          10m
+testwebapp-9c86c5f55-nc65d   1/1     Running   0          10m
+testwebapp-9c86c5f55-xkm88   1/1     Running   0          10m
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe testwebapp-9c86c5f55-49cnd
+error: the server doesn't have a resource type "testwebapp-9c86c5f55-49cnd"
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe po testwebapp-9c86c5f55-49cnd
+Name:             testwebapp-9c86c5f55-49cnd
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Tue, 25 Jun 2024 22:03:09 +0300
+Labels:           env=prod
+                  pod-template-hash=9c86c5f55
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.7
+IPs:
+  IP:           10.1.0.7
+Controlled By:  ReplicaSet/testwebapp-9c86c5f55
+Containers:
+  test-web-app:
+    Container ID:   docker://ca1ad98cf6f98094d648efcc30a31629625f511ba50261a7dbd407b723ea4975
+    Image:          zhukoffg/testwebapp:1.0
+    Image ID:       docker-pullable://zhukoffg/testwebapp@sha256:86fff69692a6b2dd9b43a191ea1cca2f07664fa73961168773b2df56d2d2c229
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Tue, 25 Jun 2024 22:03:10 +0300
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7l9w7 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  kube-api-access-7l9w7:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  11m   default-scheduler  Successfully assigned default/testwebapp-9c86c5f55-49cnd to docker-desktop
+  Normal  Pulled     11m   kubelet            Container image "zhukoffg/testwebapp:1.0" already present on machine
+  Normal  Created    11m   kubelet            Created container test-web-app
+  Normal  Started    11m   kubelet            Started container test-web-app
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.1.0.7:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.1.0.7:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://192.168.65.3:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://192.168.65.3:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://192.168.65.3
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://192.168.65.3
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   46m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    11m
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.108.170.116
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.108.170.116
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe svc tesastwebapp
+Error from server (NotFound): services "tesastwebapp" not found
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe svc testwebapp
+Name:              testwebapp
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=testwebapp
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.108.170.116
+IPs:               10.108.170.116
+Port:              <unset>  80/TCP
+TargetPort:        8080/TCP
+Endpoints:         <none>
+Session Affinity:  None
+Events:            <none>
+PS S:\GitHub\OTUS-SA\k8s> kubectl get endpoints
+NAME         ENDPOINTS           AGE
+kubernetes   192.168.65.3:6443   48m
+testwebapp   <none>              13m
+PS S:\GitHub\OTUS-SA\k8s> curl http://192.168.65.3:6443
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://192.168.65.3:6443
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f ing-testwebapp.yml
+ingress.networking.k8s.io/ingress configured
+PS S:\GitHub\OTUS-SA\k8s> kubectl get ing
+NAME      CLASS   HOSTS           ADDRESS   PORTS   AGE
+ingress   nginx   arch.homework             80      20m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   58m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    23m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   59m
+testwebapp   ClusterIP   10.108.170.116   <none>        80/TCP    24m
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe ing
+Name:             ingress
+Labels:           <none>
+Namespace:        default
+Address:
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host           Path  Backends
+  ----           ----  --------
+  arch.homework
+                 /   testwebapp:80 (<none>)
+Annotations:     nginx.ingress.kubernetes.io/rewrite-target: /$2
+Events:          <none>
+PS S:\GitHub\OTUS-SA\k8s> curl http://arch.homework
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://arch.homework
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://arch.homework:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://arch.homework:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> ingress
+ingress : The term 'ingress' is not recognized as the name of a cmdlet, function, script file, or operable program. Che
+ck the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ ingress
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (ingress:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS S:\GitHub\OTUS-SA\k8s> ingres
+ingres : The term 'ingres' is not recognized as the name of a cmdlet, function, script file, or operable program. Check
+ the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ ingres
++ ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (ingres:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl get endpoints
+NAME         ENDPOINTS           AGE
+kubernetes   192.168.65.3:6443   62m
+testwebapp   <none>              27m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                         READY   STATUS    RESTARTS   AGE
+testwebapp-9c86c5f55-49cnd   1/1     Running   0          32m
+testwebapp-9c86c5f55-8hsn9   1/1     Running   0          32m
+testwebapp-9c86c5f55-nc65d   1/1     Running   0          32m
+testwebapp-9c86c5f55-xkm88   1/1     Running   0          32m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get describe po testwebapp-9c86c5f55-49cnd
+error: the server doesn't have a resource type "describe"
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe po testwebapp-9c86c5f55-49cnd
+Name:             testwebapp-9c86c5f55-49cnd
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Tue, 25 Jun 2024 22:03:09 +0300
+Labels:           env=prod
+                  pod-template-hash=9c86c5f55
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.7
+IPs:
+  IP:           10.1.0.7
+Controlled By:  ReplicaSet/testwebapp-9c86c5f55
+Containers:
+  test-web-app:
+    Container ID:   docker://ca1ad98cf6f98094d648efcc30a31629625f511ba50261a7dbd407b723ea4975
+    Image:          zhukoffg/testwebapp:1.0
+    Image ID:       docker-pullable://zhukoffg/testwebapp@sha256:86fff69692a6b2dd9b43a191ea1cca2f07664fa73961168773b2df56d2d2c229
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Tue, 25 Jun 2024 22:03:10 +0300
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7l9w7 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  kube-api-access-7l9w7:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  33m   default-scheduler  Successfully assigned default/testwebapp-9c86c5f55-49cnd to docker-desktop
+  Normal  Pulled     33m   kubelet            Container image "zhukoffg/testwebapp:1.0" already present on machine
+  Normal  Created    33m   kubelet            Created container test-web-app
+  Normal  Started    33m   kubelet            Started container test-web-app
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it testwebapp-9c86c5f55-49cnd -- /bin/bash
+app@testwebapp-9c86c5f55-49cnd:/app$ curl http://10.1.0.7
+bash: curl: command not found
+app@testwebapp-9c86c5f55-49cnd:/app$ curl http://10.1.0.7:8080
+bash: curl: command not found
+app@testwebapp-9c86c5f55-49cnd:/app$ ls
+Microsoft.OpenApi.dll                  TestWebApp.deps.json           appsettings.Development.json
+Swashbuckle.AspNetCore.Swagger.dll     TestWebApp.dll                 appsettings.json
+Swashbuckle.AspNetCore.SwaggerGen.dll  TestWebApp.pdb                 web.config
+Swashbuckle.AspNetCore.SwaggerUI.dll   TestWebApp.runtimeconfig.json
+app@testwebapp-9c86c5f55-49cnd:/app$ ping
+bash: ping: command not found
+app@testwebapp-9c86c5f55-49cnd:/app$ wget http://10.1.0.7:8080
+bash: wget: command not found
+app@testwebapp-9c86c5f55-49cnd:/app$ sudo apt install curl
+bash: sudo: command not found
+app@testwebapp-9c86c5f55-49cnd:/app$ apt-get -y update
+Reading package lists... Done
+E: List directory /var/lib/apt/lists/partial is missing. - Acquire (13: Permission denied)
+app@testwebapp-9c86c5f55-49cnd:/app$ apt-get -y install curl
+E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
+E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
+app@testwebapp-9c86c5f55-49cnd:/app$ exit
+exit
+command terminated with exit code 100
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete svc testwebapp
+service "testwebapp" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete po testwebapp
+Error from server (NotFound): pods "testwebapp" not found
+PS S:\GitHub\OTUS-SA\k8s> kubectl get node
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   84m   v1.29.2
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                         READY   STATUS    RESTARTS   AGE
+testwebapp-9c86c5f55-49cnd   1/1     Running   0          53m
+testwebapp-9c86c5f55-8hsn9   1/1     Running   0          53m
+testwebapp-9c86c5f55-nc65d   1/1     Running   0          53m
+testwebapp-9c86c5f55-xkm88   1/1     Running   0          53m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get dp
+error: the server doesn't have a resource type "dp"
+PS S:\GitHub\OTUS-SA\k8s> kubectl get deployment
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+testwebapp   4/4     4            4           53m
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete deployment testwebapp
+deployment.apps "testwebapp" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+No resources found in default namespace.
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f dp-hello-app.yml
+deployment.apps/web created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                   READY   STATUS              RESTARTS   AGE
+web-74744cb584-7zdn5   0/1     ContainerCreating   0          3s
+web-74744cb584-jrgzs   0/1     ContainerCreating   0          3s
+web-74744cb584-mjhph   0/1     ContainerCreating   0          3s
+web-74744cb584-pxrrk   0/1     ContainerCreating   0          3s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                   READY   STATUS    RESTARTS   AGE
+web-74744cb584-7zdn5   1/1     Running   0          32s
+web-74744cb584-jrgzs   1/1     Running   0          32s
+web-74744cb584-mjhph   1/1     Running   0          32s
+web-74744cb584-pxrrk   1/1     Running   0          32s
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe po web-74744cb584-7zdn5
+Name:             web-74744cb584-7zdn5
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Tue, 25 Jun 2024 23:03:51 +0300
+Labels:           env=prod
+                  pod-template-hash=74744cb584
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.12
+IPs:
+  IP:           10.1.0.12
+Controlled By:  ReplicaSet/web-74744cb584
+Containers:
+  hello-app:
+    Container ID:   docker://9be65e5232078e0b0d6a5f5a93c17eea64ebc3f08d3b4238bc1fee1e82016848
+    Image:          gcr.io/google-samples/hello-app:1.0
+    Image ID:       docker-pullable://gcr.io/google-samples/hello-app@sha256:b1455e1c4fcc5ea1023c9e3b584cd84b64eb920e332feff690a2829696e379e7
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Tue, 25 Jun 2024 23:03:59 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     1
+      memory:  512Mi
+    Requests:
+      cpu:        200m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-j7tf5 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  kube-api-access-j7tf5:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  79s   default-scheduler  Successfully assigned default/web-74744cb584-7zdn5 to docker-desktop
+  Normal  Pulling    79s   kubelet            Pulling image "gcr.io/google-samples/hello-app:1.0"
+  Normal  Pulled     71s   kubelet            Successfully pulled image "gcr.io/google-samples/hello-app:1.0" in 1.215s(7.781s including waiting)
+  Normal  Created    71s   kubelet            Created container hello-app
+  Normal  Started    71s   kubelet            Started container hello-app
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it web-74744cb584-7zdn5 -- /bin/bash
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/bin/bash": stat /bin/bash: no such file or directory: unknown
+command terminated with exit code 126
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it web-74744cb584-7zdn5
+error: you must specify at least one command for the container
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it web-74744cb584-7zdn5 -- /bin
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/bin": is a directory: unknown: permission denied
+command terminated with exit code 126
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.1.0.12:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.1.0.12:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://192.168.65.3:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://192.168.65.3:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f svc-testwebapp.yml
+service/web created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP   98m
+web          ClusterIP   10.100.60.67   <none>        80/TCP    7s
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.100.60.67
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.100.60.67
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.100.60.67:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.100.60.67:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f svc-testwebapp.yml
+service/web configured
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP   100m
+web          ClusterIP   10.100.60.67   <none>        80/TCP    2m29s
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe svc web
+Name:              web
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          env=prod
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.100.60.67
+IPs:               10.100.60.67
+Port:              <unset>  80/TCP
+TargetPort:        8080/TCPEndpoints:         10.1.0.10:8080,10.1.0.11:8080,10.1.0.12:8080 + 1 more...Session Affinity:  NoneEvents:            <none>PS S:\GitHub\OTUS-SA\k8s> curl http://10.100.60.67
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.100.60.67
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl get endpoints
+NAME         ENDPOINTS                                                  AGE
+kubernetes   192.168.65.3:6443                                          102m
+web          10.1.0.10:8080,10.1.0.11:8080,10.1.0.12:8080 + 1 more...   4m1s
+PS S:\GitHub\OTUS-SA\k8s> curl http://192.168.65.3:6443
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://192.168.65.3:6443
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://ya.ru
+
+
+StatusCode        : 200
+StatusDescription : Ok
+Content           : <!doctype html><html lang="ru" class="i-ua_js_no i-ua_inlinesvg_yes document_services-suggest_yes d
+                    ocument_services-suggest_new-icons document_extra-content_yes document_overflow-scroll_yes"><head x
+                    ml...
+RawContent        : HTTP/1.1 200 Ok
+                    Accept-CH: Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA, Sec-CH-UA-Full
+                    -Version-List, Sec-CH-UA-WoW64, Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Platfor...
+Forms             : {}
+Headers           : {[Accept-CH, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA, Sec-CH-UA-Fu
+                    ll-Version-List, Sec-CH-UA-WoW64, Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Platform, Sec-CH-UA-
+                    Full-Version, Viewport-Width, DPR, Device-Memory, RTT, Downlink, ECT], [Content-Security-Policy, co
+                    nnect-src https://*.strm.yandex.net https://mc.yandex.com https://ya.ru https://yastatic.net https:
+                    //yastat.net https://mc.yandex.ru https://*.mc.yandex.ru https://adstat.yandex.ru https://mc.admetr
+                    ica.ru https://yabs.yandex.ru 'self' https://market-click2.yandex.ru https://an.yandex.ru https://s
+                    trm.yandex.ru https://*.strm.yandex.ru https://verify.yandex.ru https://*.verify.yandex.ru https://
+                    yandex.st https://matchid.adfox.yandex.ru https://adfox.yandex.ru https://ads.adfox.ru https://ads6
+                    .adfox.ru https://jstracer.yandex.ru https://yandex.ru https://tps.doubleverify.com https://pixel.a
+                    dsafeprotected.com https://amc.yandex.ru;img-src https://*.verify.yandex.ru https://*.ya.ru https:/
+                    /*.yandex.ru https://ya.ru https://yabs.yandex.by https://yabs.yandex.kz https://yabs.yandex.ru htt
+                    ps://yabs.yandex.uz https://yandex.ru 'self' https://yastatic.net data: https://mc.admetrica.ru htt
+                    ps://mc.yandex.com https://*.mc.yandex.ru https://adstat.yandex.ru https://mc.yandex.ru https://fav
+                    icon.yandex.net https://avatars.mds.yandex.net blob: https://market-click2.yandex.ru https://avatar
+                    s-fast.yandex.net https://banners.adfox.ru https://content.adfox.ru https://ads6.adfox.ru https://y
+                    astat.net https://*.tns-counter.ru https://verify.yandex.ru https://ads.adfox.ru https://bs.serving
+                    -sys.com https://bs.serving-sys.ru https://ad.adriver.ru https://wcm.solution.weborama.fr https://w
+                    cm-ru.frontend.weborama.fr https://wcm.weborama-tech.ru https://ad.doubleclick.net https://rgi.io h
+                    ttps://track.rutarget.ru https://ssl.hurra.com https://amc.yandex.ru https://gdeby.hit.gemius.pl ht
+                    tps://tps.doubleverify.com https://pixel.adsafeprotected.com https://impression.appsflyer.com https
+                    ://pixel.adlooxtracking.com https://pixel.adlooxtracking.ru;frame-src https://*.ya.ru https://*.yan
+                    dex.ru https://ya.ru https://yandex.ru https://yastatic.net https://mc.yandex.ru https://mc.yandex.
+                    md https://*.ya.ru https://*.yandex.ru https://ya.ru https://yandex.ru;style-src 'unsafe-inline' ht
+                    tps://yastatic.net;report-uri https://csp.yandex.net/csp?project=morda&from=morda.big.ru&showid=171
+                    9350564909794-12287658725104234984-balancer-l7leveler-kubr-yp-klg-330-BAL&h=stable-portal-mordago-1
+                    26.sas.yp-c.yandex.net&yandexuid=1042349841719350564&&version=2024-06-24-587&adb=0;script-src 'unsa
+                    fe-inline' https://*.ya.ru https://mc.yandex.com https://yastatic.net https://yandex.ru https://mc.
+                    yandex.ru https://*.mc.yandex.ru https://adstat.yandex.ru https://ya.ru https://an.yandex.ru https:
+                    //storage.mds.yandex.net;media-src https://yastatic.net https://*.yandex.net https://strm.yandex.ru
+                     https://*.strm.yandex.ru https://yastat.net data: blob:;default-src 'self' https://yastatic.net ht
+                    tps://yastat.net;font-src https://yastatic.net], [Link, <https://avatars.mds.yandex.net/get-direct-
+                    picture/1674598/oKIj85HvbV1-55YZpfI7Yw/orig>;  rel="preload"; as="image";,<https://yastatic.net/rea
+                    ct/18.2.0/react-with-dom.min.js>;  rel="preload"; as="script"; crossorigin="anonymous";,<https://ya
+                    static.net/s3/home-static/_/nova/bca6292d02a443f6564c09b41f8e81218f1c7a07d80720ed19eb2736cd5b98fe.j
+                    s>;  rel="preload"; as="script"; crossorigin="anonymous";,<https://yastatic.net/s3/home-static/_/no
+                    va/503ed213c335f2d27341ddb8313a667910b88d6c82da8c400cb392a393b5669d.js>;  rel="preload"; as="script
+                    "; crossorigin="anonymous";,<https://yastatic.net/s3/home-static/_/nova/6715dccf37002fd70bad3596214
+                    60891e5fe1b58e32e374c5d820e645af24ecf.js>;  rel="preload"; as="script"; crossorigin="anonymous";,<h
+                    ttps://yastatic.net/s3/home-static/_/nova/ea5f6aa685ead6d721f423df0a1f299fd3544ad4965a642c95f3fdccd
+                    8280bdc.js>;  rel="preload"; as="script"; crossorigin="anonymous";,<https://yastatic.net/s3/home-st
+                    atic/feeds/52/market/desktop/market-feed.js>;  as="script"; crossorigin="anonymous"; rel="preload";
+                    ,<https://yastatic.net/s3/home-static/feeds/52/market/desktop/market-feed.css>;  as="style"; rel="p
+                    reload";,<https://ya.ru/portal/feed?feed_geo=213&id=market&page=1&session-unique-id=f0e77babdc67f91
+                    d681d873c3c3720ef&geo=213&platform=desktop&shown=market>;  as="fetch"; rel="preload"; crossorigin="
+                    use-credentials";], [NEL, {"report_to": "network-errors", "max_age": 100, "success_fraction": 0.001
+                    , "failure_fraction": 0.1}]...}
+Images            : {}
+InputFields       : {@{innerHTML=; innerText=; outerHTML=<INPUT spellcheck=false aria-label=Запрос id=text class="searc
+                    h3__input mini-suggest__input" aria-autocomplete=list maxLength=400 name=text placeholder="Найдётся
+                     всё" autofocus="" autoCapitalize="off" autoCorrect="off" autoComplete="off">; outerText=; tagName=
+                    INPUT; spellcheck=false; aria-label=Запрос; id=text; class=search3__input mini-suggest__input; aria
+                    -autocomplete=list; maxLength=400; name=text; placeholder=Найдётся всё; autofocus=; autoCapitalize=
+                    off; autoCorrect=off; autoComplete=off}, @{innerHTML=; innerText=; outerHTML=<INPUT id=image-search
+                     class=image-search__picker type=file>; outerText=; tagName=INPUT; id=image-search; class=image-sea
+                    rch__picker; type=file}, @{innerHTML=; innerText=; outerHTML=<INPUT type=hidden value=213 name=lr>;
+                     outerText=; tagName=INPUT; type=hidden; value=213; name=lr}, @{innerHTML=; innerText=; outerHTML=<
+                    INPUT type=hidden value=1719350564909794-12287658725104234984-balancer-l7leveler-kubr-yp-klg-330-BA
+                    L name=msid>; outerText=; tagName=INPUT; type=hidden; value=1719350564909794-12287658725104234984-b
+                    alancer-l7leveler-kubr-yp-klg-330-BAL; name=msid}...}
+Links             : {@{innerHTML=; innerText=; outerHTML=<A aria-label=Яндекс class="home-link2 headline__logo" href="h
+                    ttps://ya.ru/" target=_self data-statlog="2headline.logo"></A>; outerText=; tagName=A; aria-label=Я
+                    ндекс; class=home-link2 headline__logo; href=https://ya.ru/; target=_self; data-statlog=2headline.l
+                    ogo}, @{innerHTML=Войти; innerText=Войти; outerHTML=<A class="home-link2 headline__personal-enter h
+                    ome-link2_color_black" href="https://passport.yandex.ru/auth?retpath=https%3A%2F%2Fsso.passport.yan
+                    dex.ru%2Fpush%3Fretpath%3Dhttps%253A%252F%252Fya.ru%252F%26uuid%3Db76d46fc-7aa6-4f86-87c3-b0801fc8a
+                    46c&amp;msid=1719350564909794-12287658725104234984-balancer-l7leveler-kubr-yp-klg-330-BAL&amp;origi
+                    n=home_yaru_desktop_new" target=_self data-statlog="2headline.enter">Войти</A>; outerText=Войти; ta
+                    gName=A; class=home-link2 headline__personal-enter home-link2_color_black; href=https://passport.ya
+                    ndex.ru/auth?retpath=https%3A%2F%2Fsso.passport.yandex.ru%2Fpush%3Fretpath%3Dhttps%253A%252F%252Fya
+                    .ru%252F%26uuid%3Db76d46fc-7aa6-4f86-87c3-b0801fc8a46c&amp;msid=1719350564909794-122876587251042349
+                    84-balancer-l7leveler-kubr-yp-klg-330-BAL&amp;origin=home_yaru_desktop_new; target=_self; data-stat
+                    log=2headline.enter}, @{innerHTML=<DIV class=headline__personal-icon><?XML:NAMESPACE PREFIX = "[def
+                    ault] http://www.w3.org/2000/svg" NS = "http://www.w3.org/2000/svg" /><svg xmlns="http://www.w3.org
+                    /2000/svg" fill="currentColor" viewBox="0 0 40 40"><path d="M7.5 12.167c0-.645.56-1.167 1.25-1.167h
+                    22.5c.69 0 1.25.522 1.25 1.167 0 .644-.56 1.166-1.25 1.166H8.75c-.69 0-1.25-.522-1.25-1.166ZM7.5 20
+                    c0-.644.56-1.167 1.25-1.167h22.5c.69 0 1.25.523 1.25 1.167s-.56 1.167-1.25 1.167H8.75c-.69 0-1.25-.
+                    523-1.25-1.167Zm1.25 6.667c-.69 0-1.25.522-1.25 1.166 0 .645.56 1.167 1.25 1.167h22.5c.69 0 1.25-.5
+                    22 1.25-1.167 0-.644-.56-1.166-1.25-1.166H8.75Z" clip-rule="evenodd" fill-rule="evenodd"></path></s
+                    vg></DIV>; innerText=; outerHTML=<A aria-haspopup=true aria-expanded=false role=button tabIndex=0 a
+                    ria-label="Меню профиля, вход не выполнен" class="home-link2 headline__personal-menu headline__pers
+                    onal-item" href="https://passport.yandex.ru" rel=noopener target=_blank data-statlog="2headline.men
+                    u"><DIV class=headline__personal-icon><?XML:NAMESPACE PREFIX = "[default] http://www.w3.org/2000/sv
+                    g" NS = "http://www.w3.org/2000/svg" /><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    viewBox="0 0 40 40"><path d="M7.5 12.167c0-.645.56-1.167 1.25-1.167h22.5c.69 0 1.25.522 1.25 1.167
+                    0 .644-.56 1.166-1.25 1.166H8.75c-.69 0-1.25-.522-1.25-1.166ZM7.5 20c0-.644.56-1.167 1.25-1.167h22.
+                    5c.69 0 1.25.523 1.25 1.167s-.56 1.167-1.25 1.167H8.75c-.69 0-1.25-.523-1.25-1.167Zm1.25 6.667c-.69
+                     0-1.25.522-1.25 1.166 0 .645.56 1.167 1.25 1.167h22.5c.69 0 1.25-.522 1.25-1.167 0-.644-.56-1.166-
+                    1.25-1.166H8.75Z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></DIV></A>; outerText=; tagN
+                    ame=A; aria-haspopup=true; aria-expanded=false; role=button; tabIndex=0; aria-label=Меню профиля, в
+                    ход не выполнен; class=home-link2 headline__personal-menu headline__personal-item; href=https://pas
+                    sport.yandex.ru; rel=noopener; target=_blank; data-statlog=2headline.menu}, @{innerHTML=<DIV class=
+                    alert__left-content-wrapper><SPAN class=alert__text>Сегодня: слабый дождь&nbsp;· +16⁠…⁠+22⁠°&nbsp;·
+                     слабый ветер 3⁠–⁠5&nbsp;м⁠/⁠с</SPAN></DIV>
+                    <DIV class=alert__image-wrapper>
+                    <DIV class="alert__image alert__image_size_fill" style="BACKGROUND-IMAGE: url(https://yastatic.net/
+                    s3/home/weather/icons/weather_new_2023/ovc_-ra.3.png)"></DIV></DIV>; innerText=Сегодня: слабый дожд
+                    ь · +16⁠…⁠+22⁠° · слабый ветер 3⁠–⁠5 м⁠/⁠с; outerHTML=<A class="home-link2 alert__content home-link
+                    2_color_inherit" href="https://yandex.ru/pogoda/?lat=55.755863&amp;lon=37.6177&amp;utm_content=Grou
+                    pedToday&amp;utm_medium=alert&amp;utm_source=morda" rel=noopener target=_blank data-statlog="2alert
+                    .weather_grouped"><DIV class=alert__left-content-wrapper><SPAN class=alert__text>Сегодня: слабый до
+                    ждь&nbsp;· +16⁠…⁠+22⁠°&nbsp;· слабый ветер 3⁠–⁠5&nbsp;м⁠/⁠с</SPAN></DIV>
+                    <DIV class=alert__image-wrapper>
+                    <DIV class="alert__image alert__image_size_fill" style="BACKGROUND-IMAGE: url(https://yastatic.net/
+                    s3/home/weather/icons/weather_new_2023/ovc_-ra.3.png)"></DIV></DIV></A>; outerText=Сегодня: слабый
+                    дождь · +16⁠…⁠+22⁠° · слабый ветер 3⁠–⁠5 м⁠/⁠с; tagName=A; class=home-link2 alert__content home-lin
+                    k2_color_inherit; href=https://yandex.ru/pogoda/?lat=55.755863&amp;lon=37.6177&amp;utm_content=Grou
+                    pedToday&amp;utm_medium=alert&amp;utm_source=morda; rel=noopener; target=_blank; data-statlog=2aler
+                    t.weather_grouped}...}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 328331
+
+
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl get endpoints
+NAME         ENDPOINTS                                                  AGE
+kubernetes   192.168.65.3:6443                                          104m
+web          10.1.0.10:8080,10.1.0.11:8080,10.1.0.12:8080 + 1 more...   6m27s
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP   105m
+web          ClusterIP   10.100.60.67   <none>        80/TCP    6m58s
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.100.60.67
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.100.60.67
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> env
+env : The term 'env' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the s
+pelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ env
++ ~~~
+    + CategoryInfo          : ObjectNotFound: (env:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it testwebapp-9c86c5f55-49cnd -- /bin/bash
+Error from server (NotFound): pods "testwebapp-9c86c5f55-49cnd" not found
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+namespace/kubernetes-dashboard created
+serviceaccount/kubernetes-dashboard created
+service/kubernetes-dashboard created
+secret/kubernetes-dashboard-certs created
+secret/kubernetes-dashboard-csrf created
+secret/kubernetes-dashboard-key-holder created
+configmap/kubernetes-dashboard-settings created
+role.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrole.rbac.authorization.k8s.io/kubernetes-dashboard created
+rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+deployment.apps/kubernetes-dashboard created
+service/dashboard-metrics-scraper created
+deployment.apps/dashboard-metrics-scraper created
+PS S:\GitHub\OTUS-SA\k8s> kubectl proxy
+Starting to serve on 127.0.0.1:8001
+PS S:\GitHub\OTUS-SA\k8s> kubectl patch deployment kubernetes-dashboard -n kubernetes-dashboard --type 'json' -p '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--enable-skip-login"}]'
+deployment.apps/kubernetes-dashboard patched
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                   READY   STATUS    RESTARTS   AGE
+web-74744cb584-7zdn5   1/1     Running   0          26m
+web-74744cb584-jrgzs   1/1     Running   0          26m
+web-74744cb584-mjhph   1/1     Running   0          26m
+web-74744cb584-pxrrk   1/1     Running   0          26m
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it web-74744cb584-7zdn5 -- /bin/bash
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/bin/bash": stat /bin/bash: no such file or directory: unknown
+command terminated with exit code 126
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it web-74744cb584-7zdn5 -- /
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/": is a directory: unknown: permissiondenied
+command terminated with exit code 126
+PS S:\GitHub\OTUS-SA\k8s> kubectl describe svc web
+Name:              web
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          env=prod
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.100.60.67
+IPs:               10.100.60.67
+Port:              <unset>  80/TCP
+TargetPort:        8080/TCP
+Endpoints:         10.1.0.10:8080,10.1.0.11:8080,10.1.0.12:8080 + 1 more...
+Session Affinity:  None
+Events:            <none>
+PS S:\GitHub\OTUS-SA\k8s> curl http://10.100.60.67
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.100.60.67
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl create deployment linux --image=ubuntu:latest
+deployment.apps/linux created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS   AGE
+linux-7499977ffb-wf84z   0/1     Completed   0          7s
+web-74744cb584-7zdn5     1/1     Running     0          33m
+web-74744cb584-jrgzs     1/1     Running     0          33m
+web-74744cb584-mjhph     1/1     Running     0          33m
+web-74744cb584-pxrrk     1/1     Running     0          33m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS     AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   1 (3s ago)   12s
+web-74744cb584-7zdn5     1/1     Running            0            34m
+web-74744cb584-jrgzs     1/1     Running            0            34m
+web-74744cb584-mjhph     1/1     Running            0            34m
+web-74744cb584-pxrrk     1/1     Running            0            34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS     AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   1 (9s ago)   18s
+web-74744cb584-7zdn5     1/1     Running            0            34m
+web-74744cb584-jrgzs     1/1     Running            0            34m
+web-74744cb584-mjhph     1/1     Running            0            34m
+web-74744cb584-pxrrk     1/1     Running            0            34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     Completed   2 (18s ago)   27s
+web-74744cb584-7zdn5     1/1     Running     0             34m
+web-74744cb584-jrgzs     1/1     Running     0             34m
+web-74744cb584-mjhph     1/1     Running     0             34m
+web-74744cb584-pxrrk     1/1     Running     0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     Completed   2 (24s ago)   33s
+web-74744cb584-7zdn5     1/1     Running     0             34m
+web-74744cb584-jrgzs     1/1     Running     0             34m
+web-74744cb584-mjhph     1/1     Running     0             34m
+web-74744cb584-pxrrk     1/1     Running     0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     Completed   2 (25s ago)   34s
+web-74744cb584-7zdn5     1/1     Running     0             34m
+web-74744cb584-jrgzs     1/1     Running     0             34m
+web-74744cb584-mjhph     1/1     Running     0             34m
+web-74744cb584-pxrrk     1/1     Running     0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     Completed   2 (27s ago)   36s
+web-74744cb584-7zdn5     1/1     Running     0             34m
+web-74744cb584-jrgzs     1/1     Running     0             34m
+web-74744cb584-mjhph     1/1     Running     0             34m
+web-74744cb584-pxrrk     1/1     Running     0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (16s ago)   40s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (18s ago)   42s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (19s ago)   43s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (19s ago)   43s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (20s ago)   44s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-wf84z   0/1     CrashLoopBackOff   2 (20s ago)   44s
+web-74744cb584-7zdn5     1/1     Running            0             34m
+web-74744cb584-jrgzs     1/1     Running            0             34m
+web-74744cb584-mjhph     1/1     Running            0             34m
+web-74744cb584-pxrrk     1/1     Running            0             34m
+PS S:\GitHub\OTUS-SA\k8s> delete po linux-7499977ffb-wf84z
+delete : The term 'delete' is not recognized as the name of a cmdlet, function, script file, or operable program. Check
+ the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ delete po linux-7499977ffb-wf84z
++ ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (delete:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete po linux-7499977ffb-wf84z
+pod "linux-7499977ffb-wf84z" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS      RESTARTS   AGE
+linux-7499977ffb-m7cws   0/1     Completed   0          5s
+web-74744cb584-7zdn5     1/1     Running     0          34m
+web-74744cb584-jrgzs     1/1     Running     0          34m
+web-74744cb584-mjhph     1/1     Running     0          34m
+web-74744cb584-pxrrk     1/1     Running     0          34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS     AGE
+linux-7499977ffb-m7cws   0/1     CrashLoopBackOff   1 (3s ago)   7s
+web-74744cb584-7zdn5     1/1     Running            0            34m
+web-74744cb584-jrgzs     1/1     Running            0            34m
+web-74744cb584-mjhph     1/1     Running            0            34m
+web-74744cb584-pxrrk     1/1     Running            0            34m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                     READY   STATUS             RESTARTS      AGE
+linux-7499977ffb-m7cws   0/1     CrashLoopBackOff   1 (11s ago)   15s
+web-74744cb584-7zdn5     1/1     Running            0             35m
+web-74744cb584-jrgzs     1/1     Running            0             35m
+web-74744cb584-mjhph     1/1     Running            0             35m
+web-74744cb584-pxrrk     1/1     Running            0             35m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get deployment
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+linux   0/1     1            0           93s
+web     4/4     4            4           35m
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete deployment linux
+deployment.apps "linux" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                   READY   STATUS    RESTARTS   AGE
+web-74744cb584-7zdn5   1/1     Running   0          35m
+web-74744cb584-jrgzs   1/1     Running   0          35m
+web-74744cb584-mjhph   1/1     Running   0          35m
+web-74744cb584-pxrrk   1/1     Running   0          35m
+PS S:\GitHub\OTUS-SA\k8s> kubectl create deployment bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+deployment.apps/bootcamp created
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                        READY   STATUS              RESTARTS   AGE
+bootcamp-544d64589d-rk8wz   0/1     ContainerCreating   0          5s
+web-74744cb584-7zdn5        1/1     Running             0          37m
+web-74744cb584-jrgzs        1/1     Running             0          37m
+web-74744cb584-mjhph        1/1     Running             0          37m
+web-74744cb584-pxrrk        1/1     Running             0          37m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                        READY   STATUS    RESTARTS   AGE
+bootcamp-544d64589d-rk8wz   1/1     Running   0          10s
+web-74744cb584-7zdn5        1/1     Running   0          37m
+web-74744cb584-jrgzs        1/1     Running   0          37m
+web-74744cb584-mjhph        1/1     Running   0          37m
+web-74744cb584-pxrrk        1/1     Running   0          37m
+PS S:\GitHub\OTUS-SA\k8s> kubectl exec -it bootcamp-544d64589d-rk8wz -- /bin/bash
+root@bootcamp-544d64589d-rk8wz:/# env
+NODE_VERSION=6.3.1
+HOSTNAME=bootcamp-544d64589d-rk8wz
+KUBERNETES_PORT=tcp://10.96.0.1:443
+KUBERNETES_PORT_443_TCP_PORT=443
+TERM=xterm
+KUBERNETES_SERVICE_PORT=443
+KUBERNETES_SERVICE_HOST=10.96.0.1
+NPM_CONFIG_LOGLEVEL=info
+WEB_PORT_80_TCP_PORT=80
+WEB_PORT_80_TCP=tcp://10.100.60.67:80
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+SHLVL=1
+HOME=/root
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_SERVICE_PORT_HTTPS=443
+WEB_PORT_80_TCP_PROTO=tcp
+WEB_PORT_80_TCP_ADDR=10.100.60.67
+WEB_SERVICE_PORT=80
+KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+WEB_PORT=tcp://10.100.60.67:80
+KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+WEB_SERVICE_HOST=10.100.60.67
+_=/usr/bin/env
+root@bootcamp-544d64589d-rk8wz:/# curl http://10.100.60.67
+Hello, world!
+Version: 1.0.0
+Hostname: web-74744cb584-jrgzs
+root@bootcamp-544d64589d-rk8wz:/# exit
+exit
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+namespace/ingress-nginx created
+serviceaccount/ingress-nginx created
+serviceaccount/ingress-nginx-admission created
+role.rbac.authorization.k8s.io/ingress-nginx created
+role.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx-admission created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+configmap/ingress-nginx-controller created
+service/ingress-nginx-controller createdservice/ingress-nginx-controller-admission createddeployment.apps/ingress-nginx-controller createdjob.batch/ingress-nginx-admission-create createdjob.batch/ingress-nginx-admission-patch created
+ingressclass.networking.k8s.io/nginx created
+validatingwebhookconfiguration.admissionregistration.k8s.io/ingress-nginx-admission created
+PS S:\GitHub\OTUS-SA\k8s> kubectl -n ingress-nginx get pod
+NAME                                        READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-6ktkc        0/1     Completed   0          11m
+ingress-nginx-admission-patch-z4dfx         0/1     Completed   1          11m
+ingress-nginx-controller-57b7568757-b8d9k   1/1     Running     0          11m
+PS S:\GitHub\OTUS-SA\k8s> kubectl apply -f ing-testwebapp.yml
+ingress.networking.k8s.io/ingress configured
+PS S:\GitHub\OTUS-SA\k8s> kubectl get ing
+NAME      CLASS   HOSTS           ADDRESS     PORTS   AGE
+ingress   nginx   arch.homework   localhost   80      121m
+PS S:\GitHub\OTUS-SA\k8s> curl http://arch.homework:8080
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://arch.homework:8080
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s> curl http://arch.homework
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello, world!
+                    Version: 1.0.0
+                    Hostname: web-74744cb584-mjhph
+
+RawContent        : HTTP/1.1 200 OK
+                    Connection: keep-alive
+                    Content-Length: 60
+                    Content-Type: text/plain; charset=utf-8
+                    Date: Tue, 25 Jun 2024 21:11:05 GMT
+
+                    Hello, world!
+                    Version: 1.0.0
+                    Hostname: web-74744cb584-mjhph...
+Forms             : {}
+Headers           : {[Connection, keep-alive], [Content-Length, 60], [Content-Type, text/plain; charset=utf-8], [Date,
+                    Tue, 25 Jun 2024 21:11:05 GMT]}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 60
+
+
+
+PS S:\GitHub\OTUS-SA\k8s> kubectl get ing
+NAME      CLASS   HOSTS           ADDRESS     PORTS   AGE
+ingress   nginx   arch.homework   localhost   80      134m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP   172m
+web          ClusterIP   10.100.60.67   <none>        80/TCP    74m
+PS S:\GitHub\OTUS-SA\k8s> kubectl get po
+NAME                        READY   STATUS    RESTARTS   AGE
+bootcamp-544d64589d-rk8wz   1/1     Running   0          42m
+web-74744cb584-7zdn5        1/1     Running   0          79m
+web-74744cb584-jrgzs        1/1     Running   0          79m
+web-74744cb584-mjhph        1/1     Running   0          79m
+web-74744cb584-pxrrk        1/1     Running   0          79m
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete ing ingress
+ingress.networking.k8s.io "ingress" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete svc web
+service "web" deleted
+PS S:\GitHub\OTUS-SA\k8s> kubectl get deployment
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+bootcamp   1/1     1            1           43m
+web        4/4     4            4           80m
+PS S:\GitHub\OTUS-SA\k8s> kubectl delete deployment web
+deployment.apps "web" deleted
+PS S:\GitHub\OTUS-SA\k8s> cd homework-2
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get po
+NAME                        READY   STATUS    RESTARTS   AGE
+bootcamp-544d64589d-rk8wz   1/1     Running   0          43m
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl apply -f
+error: flag needs an argument: 'f' in -f
+See 'kubectl apply --help' for usage.
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl apply -f .
+deployment.apps/testwebapp created
+ingress.networking.k8s.io/ingress created
+service/testwebapp created
+PS S:\GitHub\OTUS-SA\k8s\homework-2> curl http://arch.homework
+curl : The remote server returned an error: (404) Not Found.
+At line:1 char:1
++ curl http://arch.homework
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get deployment
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+bootcamp     1/1     1            1           46m
+testwebapp   4/4     4            4           26s
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP   177m
+testwebapp   ClusterIP   10.105.108.92   <none>        80/TCP    36s
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get ing
+NAME      CLASS   HOSTS           ADDRESS     PORTS   AGE
+ingress   nginx   arch.homework   localhost   80      52s
+PS S:\GitHub\OTUS-SA\k8s\homework-2> curl http://10.105.108.92
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.105.108.92
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get зщerror: the server doesn't have a resource type "зщ"PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get poNAME                          READY   STATUS    RESTARTS   AGEbootcamp-544d64589d-rk8wz     1/1     Running   0          116m
+testwebapp-6945589bb8-4jxcw   1/1     Running   0          70m
+testwebapp-6945589bb8-4zznk   1/1     Running   0          70m
+testwebapp-6945589bb8-629t5   1/1     Running   0          70m
+testwebapp-6945589bb8-vfzsm   1/1     Running   0          70m
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl exec -it bootcamp-544d64589d-rk8wz -- /bin/bash
+root@bootcamp-544d64589d-rk8wz:/# curl http://10.100.60.67
+curl: (7) Failed to connect to 10.100.60.67 port 80: Connection refused
+root@bootcamp-544d64589d-rk8wz:/# curl http://10.105.108.92
+root@bootcamp-544d64589d-rk8wz:/# curl http://10.105.108.92/health
+{"status":"OK","host":"testwebapp-6945589bb8-4jxcw","os":"Unix 5.15.146.1"}root@bootcamp-544d64589d-rk8wz:/# curl http:/exit
+exit
+PS S:\GitHub\OTUS-SA\k8s\homework-2> curl http://10.105.108.92/health
+curl : Unable to connect to the remote server
+At line:1 char:1
++ curl http://10.105.108.92/health
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS S:\GitHub\OTUS-SA\k8s\homework-2> curl http://arch.homework/health
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : {"status":"OK","host":"testwebapp-6945589bb8-4zznk","os":"Unix 5.15.146.1"}
+RawContent        : HTTP/1.1 200 OK
+                    Transfer-Encoding: chunked
+                    Connection: keep-alive
+                    Content-Type: application/json; charset=utf-8
+                    Date: Tue, 25 Jun 2024 22:40:32 GMT
+
+                    {"status":"OK","host":"testwebapp-6945589bb8-...
+Forms             : {}
+Headers           : {[Transfer-Encoding, chunked], [Connection, keep-alive], [Content-Type, application/json; charset=u
+                    tf-8], [Date, Tue, 25 Jun 2024 22:40:32 GMT]}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 75
+
+
+
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl apply -f ing-testwebapp.yml
+ingress.networking.k8s.io/ingress configured
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl apply -f ing-testwebapp.yml
+ingress.networking.k8s.io/ingress configured
+PS S:\GitHub\OTUS-SA\k8s\homework-2> kubectl get ing
+NAME      CLASS   HOSTS           ADDRESS     PORTS   AGE
+ingress   nginx   arch.homework   localhost   80      78m
+PS S:\GitHub\OTUS-SA\k8s\homework-2>
