@@ -18,6 +18,6 @@
     <None Include="grafana\provisioning\dashboards\dashboard.yaml" />
     <None Include="grafana\provisioning\dashboards\UserServiceAPIDashboard.json" />
     <None Include="grafana\provisioning\datasources\prometheus_ds.yaml" />
-    <None Include="prometheus\prometheus.yaml" />
+    <None Include="prometheus\prometheus.yml" />
   </ItemGroup>
 </Project>
