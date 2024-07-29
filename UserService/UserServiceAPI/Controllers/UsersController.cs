@@ -84,6 +84,20 @@ namespace UserServiceAPI.Controllers
             return user;
         }
 
+        // GET: api/users/5
+        [HttpGet("{email}")]
+        public async Task<ActionResult<User>> GetUser(string email)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower());
+
+            if (user == null)
+            {
+                return NotFound($"Пользователь с email: {email} не существует!"); ;
+            }
+
+            return user;
+        }
+
         // POST: api/users
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)

@@ -33,8 +33,10 @@ namespace UserServiceAPI.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] LoginForm loginForm)
         {
+            _logger.LogInformation($"Login form requested {loginForm.ToString()}");
             var existingUser = _context.Users.FirstOrDefault(x => x.Email.ToLower() == loginForm.Email.ToLower());
             if (existingUser == null) {
+                _logger.LogWarning($"User not found!");
                 return BadRequest($"Пользователь с email {loginForm.Email} не существует!");
             }
 
@@ -58,6 +60,14 @@ namespace UserServiceAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> Register([FromBody] RegisterForm registerForm)
         {
+            _logger.LogInformation($"Register form requested {registerForm.ToString()}");
+            var existingUser = _context.Users.FirstOrDefault(x => x.Email.ToLower() == registerForm.Email.ToLower());
+            if (existingUser != null)
+            {
+                _logger.LogWarning($"User already exist!");
+                return BadRequest($"Пользователь с email {registerForm.Email} уже зарегистрирован!");
+            }
+
             var user = new User
             {
                 FirstName = registerForm.FirstName,
