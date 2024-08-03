@@ -14,7 +14,7 @@
 
         public override string ToString()
         {
-            return $"{LastName} {FirstName} {Email}";
+            return $"{LastName} {FirstName} {Email} {Password}";
         }
 
     }
