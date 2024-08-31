@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
 
@@ -37,7 +39,8 @@ namespace UserServiceAPI.Controllers
                     status = "OK",
                     machinename = Environment.MachineName,
                     osversion = Environment.OSVersion.VersionString,
-                    processid = Environment.ProcessId
+                    processid = Environment.ProcessId,
+                    timestamp = DateTime.Now,
                 });
             }
             //catch (Npgsql.NpgsqlException pgex)
@@ -84,20 +87,6 @@ namespace UserServiceAPI.Controllers
             return user;
         }
 
-        // GET: api/users/5
-        [HttpGet("{email}")]
-        public async Task<ActionResult<User>> GetUser(string email)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower());
-
-            if (user == null)
-            {
-                return NotFound($"Пользователь с email: {email} не существует!"); ;
-            }
-
-            return user;
-        }
-
         // POST: api/users
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
@@ -112,10 +101,16 @@ namespace UserServiceAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
-            //if (id != user.Id)
-            //{
-            //    return BadRequest();
-            //}
+            var jwt = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
+            var tokenData = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+            var userIdValue = tokenData.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int userId = 0;
+            
+
+            if (!int.TryParse(userIdValue, out userId) && id != userId)
+            {
+                return BadRequest("Modifying another user is not allowed!");
+            }
 
             var curuser = await _context.Users.FindAsync(id);
             if (curuser == null)

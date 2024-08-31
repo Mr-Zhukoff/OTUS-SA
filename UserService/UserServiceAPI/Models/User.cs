@@ -22,14 +22,15 @@ namespace UserServiceAPI.Models
 
         [Column("email")]
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Column("salt")]
         [SwaggerSchema(ReadOnly = true)]
-        public string PasswordSalt { get; set; }
+        public string? PasswordSalt { get; set; }
 
         [Column("hash")]
         [SwaggerSchema(ReadOnly = true)]
-        public string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
     }
 }

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     io.kompose.service: userserviceapi
-  name: userserviceapi
+  name: userserviceapi-dp
 spec:
   replicas: 2
   selector:
@@ -15,12 +15,10 @@ spec:
         io.kompose.service: userserviceapi
     spec:
       containers:
-        - image: zhukoffg/testwebapp:1.0
+        - image: zhukoffg/userserviceapi:1.2
           name: userserviceapi
           ports:
             - containerPort: 8080
-              protocol: TCP
-            - containerPort: 8081
               protocol: TCP
       hostname: userserviceapi
       restartPolicy: Always

@@ -40,11 +40,13 @@ builder.Services.AddDbContext<UsersDbContext>(options => options.UseNpgsql(build
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 //Starting the metrics exporter, will expose "/metrics"
 app.UseMetricServer();

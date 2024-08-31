@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using System.Threading;
 using UserServiceAPI.Data;
 using UserServiceAPI.Logic;
 using UserServiceAPI.Models;
@@ -36,8 +32,8 @@ namespace UserServiceAPI.Controllers
             _logger.LogInformation($"Login form requested {loginForm.ToString()}");
             var existingUser = _context.Users.FirstOrDefault(x => x.Email.ToLower() == loginForm.Email.ToLower());
             if (existingUser == null) {
-                _logger.LogWarning($"User not found!");
-                return BadRequest($"Пользователь с email {loginForm.Email} не существует!");
+                _logger.LogWarning($"User ({loginForm.Email}) not found!");
+                return BadRequest($"Пользователь с email '{loginForm.Email}' не существует!");
             }
 
             if (!CheckPassword(loginForm.Password, existingUser)) {
@@ -49,7 +45,12 @@ namespace UserServiceAPI.Controllers
 
             var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
-              null,
+              claims: new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Email, existingUser.Email),
+                        new Claim("id", existingUser.Id.ToString()),
+                    },
+        notBefore: DateTime.UtcNow,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
 
@@ -57,6 +58,7 @@ namespace UserServiceAPI.Controllers
 
             return Ok(token);
         }
+
         [HttpPost]
         public async Task<ActionResult> Register([FromBody] RegisterForm registerForm)
         {
@@ -81,6 +83,15 @@ namespace UserServiceAPI.Controllers
             var result2 = await _context.SaveChangesAsync();
 
             return Ok(result.ToString());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Logout()
+        {
+            _logger.LogInformation($"Logout user");
+            Response.Headers.Remove("Authorization");
+
+            return Ok();
         }
 
         private bool CheckPassword(string pwd, User user)
