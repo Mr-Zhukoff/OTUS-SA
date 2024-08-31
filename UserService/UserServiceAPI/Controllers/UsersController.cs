@@ -77,6 +77,11 @@ namespace UserServiceAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
+            int userId = GetUserId();
+
+            if (id != userId)
+                return BadRequest("Modifying another user is not allowed!");
+
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -101,22 +106,14 @@ namespace UserServiceAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
-            var jwt = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
-            var tokenData = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
-            var userIdValue = tokenData.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            int userId = 0;
-            
+            int userId = GetUserId();            
 
-            if (!int.TryParse(userIdValue, out userId) && id != userId)
-            {
+            if (id != userId)
                 return BadRequest("Modifying another user is not allowed!");
-            }
 
             var curuser = await _context.Users.FindAsync(id);
             if (curuser == null)
-            {
                 return NotFound();
-            }
 
             curuser.FirstName = user.FirstName;
             curuser.LastName = user.LastName;
@@ -163,6 +160,16 @@ namespace UserServiceAPI.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+
+        private int GetUserId()
+        {
+            var jwt = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
+            var tokenData = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+            var userIdValue = tokenData.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int userId = 0;
+            int.TryParse(userIdValue, out userId);
+            return userId;
         }
     }
 }
