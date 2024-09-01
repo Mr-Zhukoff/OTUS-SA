@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: userserviceapi-ing
+  name: userservice-ing
 spec:
   ingressClassName: nginx
   rules:
@@ -9,9 +9,9 @@ spec:
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
-            name: userserviceapi
+            name: userservice-svc
             port:
               number: 8080
