@@ -26,6 +26,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      };
  });
 
+
+//builder.Configuration.AddKeyPerFile("/etc/conf", false, true);
+
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,18 +38,20 @@ builder.Services.AddSwaggerGen(options =>
     options.EnableAnnotations();
 });
 
-builder.Services.AddDbContext<UsersDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+string pgConnStr = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING");
+if (String.IsNullOrEmpty(pgConnStr))
+    pgConnStr = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<UsersDbContext>(options => options.UseNpgsql(pgConnStr));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
 app.UseSwagger();
 app.UseSwaggerUI();
+//}
 
 //Starting the metrics exporter, will expose "/metrics"
 app.UseMetricServer();

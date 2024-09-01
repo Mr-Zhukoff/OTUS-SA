@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Headers;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using UserServiceAPI.Data;
@@ -18,11 +20,13 @@ namespace UserServiceAPI.Controllers
     {
         private readonly UsersDbContext _context;
         private readonly ILogger<UsersController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(ILogger<UsersController> logger, UsersDbContext context)
+        public UsersController(ILogger<UsersController> logger, UsersDbContext context, IConfiguration config)
         {
             _logger = logger;
             _context = context;
+            _configuration = config;
         }
 
         // healthcheck
@@ -34,6 +38,7 @@ namespace UserServiceAPI.Controllers
             {
                 _logger.LogInformation($"Health status requested {Environment.MachineName}");
                 _context.Database.OpenConnection();
+                
                 return Ok(new
                 {
                     status = "OK",
@@ -41,6 +46,7 @@ namespace UserServiceAPI.Controllers
                     osversion = Environment.OSVersion.VersionString,
                     processid = Environment.ProcessId,
                     timestamp = DateTime.Now,
+                    pgconnstr = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING")
                 });
             }
             //catch (Npgsql.NpgsqlException pgex)
