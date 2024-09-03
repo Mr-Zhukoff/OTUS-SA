@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,8 +7,10 @@ using Microsoft.Net.Http.Headers;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,6 +30,17 @@ namespace UserServiceAPI.Controllers
             _logger = logger;
             _context = context;
             _configuration = config;
+
+            try
+            {
+                if (!_context.Database.CanConnect())
+                    _context.Database.EnsureCreated();
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex, $"UsersController initialization error!");
+            }
+
         }
 
         // healthcheck
@@ -37,8 +51,7 @@ namespace UserServiceAPI.Controllers
             try
             {
                 _logger.LogInformation($"Health status requested {Environment.MachineName}");
-                _context.Database.OpenConnection();
-                
+
                 return Ok(new
                 {
                     status = "OK",
@@ -46,6 +59,7 @@ namespace UserServiceAPI.Controllers
                     osversion = Environment.OSVersion.VersionString,
                     processid = Environment.ProcessId,
                     timestamp = DateTime.Now,
+                    database = _context.Database.CanConnect(),
                     pgconnstr = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING")
                 });
             }
@@ -60,7 +74,8 @@ namespace UserServiceAPI.Controllers
             //        message = pgex.Message
             //    });
             //}
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return Ok(new
                 {
                     status = "BAD",
@@ -69,6 +84,9 @@ namespace UserServiceAPI.Controllers
                     processid = Environment.ProcessId,
                     message = ex.Message
                 });
+            }
+            finally {
+                _context.Database.CloseConnection();
             }
         }
 
