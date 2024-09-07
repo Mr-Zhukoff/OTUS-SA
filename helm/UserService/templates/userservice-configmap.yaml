@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: {{ .Values.userservice.configMapRef.name }}
+data:
+ PG_CONNECTION_STRING: {{ .Values.userservice.configMapRef.pgConnStr }}
+ PageSize: "50"
