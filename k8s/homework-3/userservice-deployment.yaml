@@ -15,7 +15,7 @@ spec:
         app: userservice
     spec:
       containers:
-        - image: zhukoffg/userserviceapi:1.4
+        - image: zhukoffg/userserviceapi:1.6
           name: userservice
           imagePullPolicy: Always
           ports:
