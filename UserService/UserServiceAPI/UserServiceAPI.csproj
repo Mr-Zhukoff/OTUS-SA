@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <Copyright>Zhukoff</Copyright>
+    <AssemblyVersion>2014.9.1.1</AssemblyVersion>
+    <FileVersion>2014.9.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

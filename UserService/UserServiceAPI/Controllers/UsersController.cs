@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Headers;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -34,7 +28,10 @@ namespace UserServiceAPI.Controllers
             try
             {
                 if (!_context.Database.CanConnect())
+                {
+                    _context.Database.EnsureDeleted();
                     _context.Database.EnsureCreated();
+                }
             }
             catch (Exception ex) 
             {
@@ -52,9 +49,13 @@ namespace UserServiceAPI.Controllers
             {
                 _logger.LogInformation($"Health status requested {Environment.MachineName}");
 
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+
                 return Ok(new
                 {
                     status = "OK",
+                    version = fvi.FileVersion,
                     machinename = Environment.MachineName,
                     osversion = Environment.OSVersion.VersionString,
                     processid = Environment.ProcessId,
