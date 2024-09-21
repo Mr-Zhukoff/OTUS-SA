@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.userservice.app }}
+  name: {{ .Values.userservice.name }}
+spec:
+  replicas: {{ .Values.userservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.userservice.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.userservice.app }}
+    spec:
+      containers:
+        - image: {{ .Values.userservice.container.repository }}
+          name: {{ .Values.userservice.name }}
+          imagePullPolicy: {{ .Values.userservice.container.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.userservice.container.port }}
+              protocol: {{ .Values.userservice.container.protocol }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.userservice.configMapRef.name }}
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+      hostname: {{ .Values.userservice.hostname }}
+      restartPolicy: {{ .Values.userservice.restartPolicy }}
+

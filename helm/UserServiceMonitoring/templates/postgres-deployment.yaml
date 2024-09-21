@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.postgres.app }}
+  name: {{ .Values.postgres.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.postgres.app }}
+  strategy:
+    type: {{ .Values.postgres.strategyType }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.postgres.app }}
+    spec:
+      volumes:
+        - name: {{ .Values.postgres.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.postgres.claimName }}
+      containers:
+      - name: {{ .Values.postgres.name }}
+        image: {{ .Values.postgres.container.repository }}
+        imagePullPolicy: {{ .Values.postgres.container.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.postgres.container.port }}
+          protocol: {{ .Values.postgres.container.protocol }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.envs.dbName }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretsName }}
+              key: password
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.envs.dbUser }}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: {{ .Values.postgres.volumeName }}
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1"
+          requests:
+            memory: 256Mi
+            cpu: "0.2"
+
+
