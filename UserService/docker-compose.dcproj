@@ -16,7 +16,8 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include="grafana\provisioning\dashboards\dashboard.yaml" />
-    <None Include="grafana\provisioning\dashboards\UserServiceAPIDashboard.json" />
+    <None Include="grafana\provisioning\dashboards\kubernetes-pods.json" />
+    <None Include="grafana\provisioning\dashboards\user-service.json" />
     <None Include="grafana\provisioning\datasources\prometheus_ds.yaml" />
     <None Include="prometheus\prometheus.yml" />
   </ItemGroup>
