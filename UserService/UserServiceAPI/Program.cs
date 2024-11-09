@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prometheus;
+using Serilog.Formatting.Compact;
+using Serilog;
 using System.Text;
 using UserServiceAPI.Data;
+using Elastic.Serilog.Sinks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      };
  });
 
+//var logger = new LoggerConfiguration()
+//                                .ReadFrom.Configuration(builder.Configuration)
+//                                .Enrich.FromLogContext()
+//                                .WriteTo.Console(new CompactJsonFormatter())
+//                                .WriteTo.Elasticsearch(new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+//                                {
+//                                    AutoRegisterTemplate = true,
+//                                })
+//                                .CreateLogger();
+//builder.Host.UseSerilog(logger);
 
 //builder.Configuration.AddKeyPerFile("/etc/conf", false, true);
 
@@ -52,6 +65,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 //}
+
+//app.UseSerilogRequestLogging();
 
 //Starting the metrics exporter, will expose "/metrics"
 app.UseMetricServer();
