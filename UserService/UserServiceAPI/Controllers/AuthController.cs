@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using UserServiceAPI.Data;
@@ -91,9 +90,10 @@ namespace UserServiceAPI.Controllers
                 };
                 user.PasswordHash = PasswordHasher.ComputeHash(registerForm.Password, user.PasswordSalt, _pepper);
                 var result = _context.Users.Add(user);
+                
                 var result2 = await _context.SaveChangesAsync();
 
-                return Ok(result.ToString());
+                return Ok(result.Entity);
             }
             catch (Exception ex) {
                 return StatusCode(500, ex.Message);

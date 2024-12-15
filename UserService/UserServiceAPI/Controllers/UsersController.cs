@@ -6,8 +6,6 @@ using System.IdentityModel.Tokens.Jwt;
 using UserServiceAPI.Data;
 using UserServiceAPI.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace UserServiceAPI.Controllers
 {
     [Authorize]
@@ -33,7 +31,7 @@ namespace UserServiceAPI.Controllers
                     _context.Database.EnsureCreated();
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"UsersController initialization error!");
             }
@@ -64,17 +62,7 @@ namespace UserServiceAPI.Controllers
                     pgconnstr = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING")
                 });
             }
-            //catch (Npgsql.NpgsqlException pgex)
-            //{
-            //    return Ok(new
-            //    {
-            //        status = "BAD",
-            //        machinename = Environment.MachineName,
-            //        osversion = Environment.OSVersion.VersionString,
-            //        processid = Environment.ProcessId,
-            //        message = pgex.Message
-            //    });
-            //}
+
             catch (Exception ex)
             {
                 return Ok(new
@@ -86,7 +74,8 @@ namespace UserServiceAPI.Controllers
                     message = ex.Message
                 });
             }
-            finally {
+            finally
+            {
                 _context.Database.CloseConnection();
             }
         }
@@ -110,9 +99,7 @@ namespace UserServiceAPI.Controllers
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
             return user;
         }
@@ -131,36 +118,78 @@ namespace UserServiceAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
-            int userId = GetUserId();            
-
-            if (id != userId)
-                return BadRequest("Modifying another user is not allowed!");
-
-            var curuser = await _context.Users.FindAsync(id);
-            if (curuser == null)
-                return NotFound();
-
-            curuser.FirstName = user.FirstName;
-            curuser.LastName = user.LastName;
-            curuser.MiddleName = user.MiddleName;
-            curuser.Email = user.Email;
-
-            _context.Entry(curuser).State = EntityState.Modified;
-
             try
             {
+                int userId = GetUserId();
+
+                if (id != userId)
+                    return BadRequest("Modifying another user is not allowed!");
+
+                var curuser = await _context.Users.FindAsync(id);
+                if (curuser == null)
+                    return NotFound();
+
+                curuser.FirstName = user.FirstName;
+                curuser.LastName = user.LastName;
+                curuser.MiddleName = user.MiddleName;
+                curuser.Email = user.Email;
+
+                _context.Entry(curuser).State = EntityState.Modified;
+
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!UserExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "PutUser Error!");
+                return StatusCode(500, ex.Message);
+            }
+
+            return NoContent();
+        }
+
+        // PATCH: api/users/5
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchUser(int id, User user)
+        {
+            try
+            {
+                int userId = GetUserId();
+
+                if (id != userId)
+                    return BadRequest("Modifying another user is not allowed!");
+
+                var curuser = await _context.Users.FindAsync(id);
+                if (curuser == null)
+                    return NotFound();
+
+                curuser.FirstName = user.FirstName;
+                curuser.LastName = user.LastName;
+                curuser.MiddleName = user.MiddleName;
+                curuser.Email = user.Email;
+
+                _context.Entry(curuser).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                    return NotFound();
+                else
+                    throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "PatchUser Error!");
+                return StatusCode(500, ex.Message);
             }
 
             return NoContent();
@@ -170,16 +199,22 @@ namespace UserServiceAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = await _context.Users.FindAsync(id);
+                if (user == null)
+                    return NotFound();
+
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DeleteUser Error!");
+                return StatusCode(500, ex.Message);
+            }
         }
 
         private bool UserExists(int id)
