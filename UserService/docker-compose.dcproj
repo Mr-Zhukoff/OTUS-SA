@@ -10,6 +10,9 @@
     <DockerServiceName>userserviceapi</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="logstash\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
@@ -19,10 +22,6 @@
     <None Include="grafana\provisioning\dashboards\kubernetes-pods.json" />
     <None Include="grafana\provisioning\dashboards\user-service.json" />
     <None Include="grafana\provisioning\datasources\prometheus_ds.yaml" />
-    <None Include="logstash\elasticsearch.yml" />
-    <None Include="logstash\kibana.yml" />
-    <None Include="logstash\logstash.yml" />
-    <None Include="logstash\pipeline\logstash.conf" />
     <None Include="prometheus\prometheus.yml" />
   </ItemGroup>
 </Project>

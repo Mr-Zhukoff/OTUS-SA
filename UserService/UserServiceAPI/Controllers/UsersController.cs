@@ -59,7 +59,7 @@ namespace UserServiceAPI.Controllers
                     processid = Environment.ProcessId,
                     timestamp = DateTime.Now,
                     database = _context.Database.CanConnect(),
-                    pgconnstr = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING")
+                    pgconnstr = Environment.GetEnvironmentVariable("PG_CONN_STR")
                 });
             }
 
@@ -93,8 +93,10 @@ namespace UserServiceAPI.Controllers
         {
             int userId = GetUserId();
 
-            if (id != userId)
-                return BadRequest("Modifying another user is not allowed!");
+            int requestUserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+
+            if (requestUserId != userId)
+                return BadRequest("Seeing another user is not allowed!");
 
             var user = await _context.Users.FindAsync(id);
 
@@ -121,8 +123,9 @@ namespace UserServiceAPI.Controllers
             try
             {
                 int userId = GetUserId();
+                int requestUserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
 
-                if (id != userId)
+                if (requestUserId != userId)
                     return BadRequest("Modifying another user is not allowed!");
 
                 var curuser = await _context.Users.FindAsync(id);
@@ -162,8 +165,9 @@ namespace UserServiceAPI.Controllers
             try
             {
                 int userId = GetUserId();
+                int requestUserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
 
-                if (id != userId)
+                if (requestUserId != userId)
                     return BadRequest("Modifying another user is not allowed!");
 
                 var curuser = await _context.Users.FindAsync(id);
@@ -201,6 +205,12 @@ namespace UserServiceAPI.Controllers
         {
             try
             {
+                int userId = GetUserId();
+                int requestUserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+
+                if (requestUserId != userId)
+                    return BadRequest("Deleting another user is not allowed!");
+
                 var user = await _context.Users.FindAsync(id);
                 if (user == null)
                     return NotFound();
@@ -230,6 +240,15 @@ namespace UserServiceAPI.Controllers
             int userId = 0;
             int.TryParse(userIdValue, out userId);
             return userId;
+        }
+
+        private int GetUserIdFromJwt(string authHeader)
+        {
+            var token = authHeader.Replace("Bearer ", "");
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
+            return int.Parse(userId);
         }
     }
 }
