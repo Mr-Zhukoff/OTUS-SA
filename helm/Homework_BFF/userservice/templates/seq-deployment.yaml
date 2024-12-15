@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: seq
+  name: seq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+        - env:
+            - name: ACCEPT_EULA
+              value: "Y"
+          image: datalust/seq:latest
+          name: seq
+          ports:
+            - containerPort: 5341
+              protocol: TCP
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
