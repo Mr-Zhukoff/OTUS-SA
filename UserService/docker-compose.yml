@@ -69,3 +69,9 @@ services:
     ports:
       - "5341:5341"
       - "8088:80"
+  usersservice:
+    image: ${DOCKER_REGISTRY-}usersservice
+    build:
+      context: .
+      dockerfile: UsersService/Dockerfile
+
