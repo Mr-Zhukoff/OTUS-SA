@@ -13,20 +13,20 @@ services:
             condition: service_healthy
         grafana:
             condition: service_healthy
-        postgres:
+        usersdb:
             condition: service_started
 
-  postgres:
-    image: postgres:14-alpine
-    restart: always
+  usersdb:
+    image: postgres:17.0
+    container_name: usersdb
     environment:
       - POSTGRES_DB=users
       - POSTGRES_USER=pguser
       - POSTGRES_PASSWORD=12345678
-    ports:
-      - "5432:5432"
     volumes:
-     - db:/var/lib/postgresql/data
+      - ./.postgress/users:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
 
   grafana:
     container_name: grafana
@@ -61,56 +61,11 @@ services:
         retries: 10
         start_period: 10s
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.24
-    container_name: elasticsearch
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
+      - ACCEPT_EULA=Y
     ports:
-      - "9200:9200"
-      - "9300:9300"
-    networks:
-      - elk
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.17.24
-    container_name: logstash
-    volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
-    ports:
-      - "5000:5000"
-      - "9600:9600"
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.24
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
-
-volumes:
-  db: 
-  esdata:
-    driver: local
-
-networks:
-  elk:
-    driver: bridge
+      - "5341:5341"
+      - "8088:80"
