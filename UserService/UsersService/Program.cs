@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
+using UsersService;
 using UsersService.Data;
+using UsersService.Endpoints;
 using UsersService.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,8 @@ builder.Host.UseSerilog((context, configuration) =>
     .WriteTo.Seq(seqUrl);
 });
 
+builder.Services.AddApplication();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,16 +35,18 @@ builder.Services.AddTransient<LogContextMiddleware>();
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql(pgConnStr));
 
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+
 builder.Services.AddHealthChecks().AddNpgSql(pgConnStr);
 
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseMiddleware<LogContextMiddleware>();
 
@@ -50,6 +56,8 @@ app.MapHealthChecks("hc", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+app.AddUsersEndpoints(app.Services.GetRequiredService<IConfiguration>());
 
 app.MapGet("/health", () =>
 {
@@ -88,8 +96,3 @@ app.MapGet("/health", () =>
 .WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

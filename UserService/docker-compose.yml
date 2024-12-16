@@ -1,11 +1,9 @@
 services:
-  userserviceapi:
-    container_name: userserviceapi
-    hostname: userserviceapi
-    image: ${DOCKER_REGISTRY-}userserviceapi
+  usersservice:
+    image: ${DOCKER_REGISTRY-}usersservice
     build:
       context: .
-      dockerfile: UserServiceAPI/Dockerfile
+      dockerfile: UsersService/Dockerfile
     ports:
         - "8080:8080"
     depends_on:
@@ -69,9 +67,4 @@ services:
     ports:
       - "5341:5341"
       - "8088:80"
-  usersservice:
-    image: ${DOCKER_REGISTRY-}usersservice
-    build:
-      context: .
-      dockerfile: UsersService/Dockerfile
 

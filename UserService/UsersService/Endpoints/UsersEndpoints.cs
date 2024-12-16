@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,7 +11,7 @@ namespace UsersService.Endpoints;
 
 public static class UsersEndpoints
 {
-    public static void AddUsersEndpoints(this IEndpointRouteBuilder app, IConfiguration config, ILogger logger)
+    public static void AddUsersEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
     {
         app.MapGet("/", () => "UserService");
 
@@ -54,15 +54,15 @@ public static class UsersEndpoints
             var result = await userRepository.DeleteUser(id);
             return Results.Ok(result);
         });
-        app.MapGet("/login", async (LoginForm loginForm, IUsersRepository userRepository) =>
+        app.MapPost("/login", async (LoginForm loginForm, IUsersRepository userRepository) =>
         {
             try
             {
-                logger.LogInformation($"Login form requested {loginForm.ToString()}");
+                Log.Information($"Login form requested {loginForm.ToString()}");
                 var existingUser = await userRepository.GetUserByEmail(loginForm.Email);
                 if (existingUser == null)
                 {
-                    logger.LogWarning($"User ({loginForm.Email}) not found!");
+                    Log.Warning($"User ({loginForm.Email}) not found!");
                     return Results.BadRequest($"Пользователь с email '{loginForm.Email}' не существует!");
                 }
 
@@ -93,20 +93,20 @@ public static class UsersEndpoints
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, ex.Message);
+                Log.Error(ex, ex.Message);
                 return Results.Problem(ex.Message, null, 500, "Login error!" );
             }
         });
 
-        app.MapGet("/register", async (RegisterForm registerForm, IUsersRepository userRepository) =>
+        app.MapPost("/register", async (RegisterForm registerForm, IUsersRepository userRepository) =>
         {
             try
             {
-                logger.LogInformation($"Register form requested {registerForm.ToString()}");
+                Log.Information($"Register form requested {registerForm.ToString()}");
                 var existingUser = userRepository.GetUserByEmail(registerForm.Email);
                 if (existingUser != null)
                 {
-                    logger.LogWarning($"User already exist!");
+                    Log.Warning($"User already exist!");
                     return Results.BadRequest($"Пользователь с email {registerForm.Email} уже зарегистрирован!");
                 }
 
@@ -125,7 +125,7 @@ public static class UsersEndpoints
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, ex.Message);
+                Log.Error(ex, ex.Message);
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
