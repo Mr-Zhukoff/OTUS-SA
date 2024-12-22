@@ -11,4 +11,5 @@ public interface IUsersRepository
     Task<List<User>> GetAllUsers();
     Task<int> UpdateUser(User user);
     Task<int> UpdateUserPartial(User user);
+    Task<bool> ResetDb();
 }

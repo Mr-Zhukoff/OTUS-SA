@@ -7,7 +7,7 @@ userservice:
   restartPolicy: Always
 
   image:
-    repository: zhukoffg/userserviceapi:1.9
+    repository: zhukoffg/usersservice:1.1
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []

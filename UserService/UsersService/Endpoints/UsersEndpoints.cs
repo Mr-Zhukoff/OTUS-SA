@@ -103,7 +103,7 @@ public static class UsersEndpoints
             try
             {
                 Log.Information($"Register form requested {registerForm.ToString()}");
-                var existingUser = userRepository.GetUserByEmail(registerForm.Email);
+                var existingUser = await userRepository.GetUserByEmail(registerForm.Email);
                 if (existingUser != null)
                 {
                     Log.Warning($"User already exist!");
@@ -121,7 +121,7 @@ public static class UsersEndpoints
                 user.PasswordHash = PasswordHasher.ComputeHash(registerForm.Password, user.PasswordSalt, config["Auth:Pepper"]);
                 var result = userRepository.CreateUser(user);
 
-                return Results.Ok(result);
+                return Results.Ok(result.Result);
             }
             catch (Exception ex)
             {
@@ -130,6 +130,19 @@ public static class UsersEndpoints
             }
         });
 
-
+        app.MapGet("/resetdb", async (IUsersRepository userRepository) =>
+        {
+            try
+            {
+                Log.Information($"Resetting Users DB");
+                var result = await userRepository.ResetDb();
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                return Results.Problem(ex.Message, null, 500, "Register error!");
+            }
+        });
     }
 }

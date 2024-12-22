@@ -84,5 +84,12 @@ public class UsersRepository(UsersDbContext context) : IUsersRepository
         await _context.SaveChangesAsync();
         return user.Id;
     }
+
+    public async Task<bool> ResetDb()
+    {
+        await _context.Database.EnsureDeletedAsync();
+        var result = await _context.Database.EnsureCreatedAsync();
+        return result;
+    }
 }
 
