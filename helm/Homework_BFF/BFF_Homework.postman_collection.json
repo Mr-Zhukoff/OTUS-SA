@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "edbbb40c-dbf2-42b5-8874-616fc4477b3a",
+		"name": "BFF_Homework",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "2482108",
+		"_collection_link": "https://zhukoff-5467.postman.co/workspace/OTUS~c27f666f-b9d2-4d5b-9ced-c380e10f33bd/collection/2482108-edbbb40c-dbf2-42b5-8874-616fc4477b3a?action=share&source=collection_link&creator=2482108"
+	},
+	"item": [
+		{
+			"name": "UserService HealthCheck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"HealthCheck is OK\", function () {\r",
+							"    let result = pm.response.json();\r",
+							"    pm.expect(result.status).to.equal(\"Healthy\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://arch.homework/hc"
+			},
+			"response": []
+		},
+		{
+			"name": "Register user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"User1Email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+							"pm.collectionVariables.set(\"User1Password\", pm.variables.replaceIn('{{$randomPassword}}'));\r",
+							"pm.collectionVariables.set(\"User1FirstName\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+							"pm.collectionVariables.set(\"User1LastName\", pm.variables.replaceIn('{{$randomLastName}}'));\r",
+							"pm.collectionVariables.set(\"User1MiddleName\", pm.variables.replaceIn('{{$randomNamePrefix}}'));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.collectionVariables.get(\"User1Email\"));\r",
+							"console.log(pm.collectionVariables.get(\"User1Password\"));\r",
+							"\r",
+							"let result = pm.response.json();\r",
+							"pm.collectionVariables.set(\"User1Id\", result.id);\r",
+							"\r",
+							"console.log(pm.collectionVariables.get(\"User1Id\"));\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"{{User1FirstName}}\",\r\n  \"lastName\": \"{{User1LastName}}\",\r\n  \"middleName\": \"{{User1MiddleName}}\",\r\n  \"email\": \"{{User1Email}}\",\r\n  \"password\": \"{{User1Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/api/users/register"
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 access check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"Modifying another user is not allowed!"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://{{base_url}}/api/users/{{User1Id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Login user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"User1Token\", pm.response.json());\r",
+							"console.log(pm.collectionVariables.get(\"User1Token\"));\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Email\": \"{{User1Email}}\",\r\n  \"Password\": \"{{User1Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/api/users/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Update user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.variables.get(\"User1Email\"));\r",
+							"console.log(pm.variables.get(\"User1Password\"));\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{User1Token}}"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"FirstName\": \"{{User1FirstName}}-Updated\",\r\n  \"LastName\": \"{{User1LastName}}-Updated\",\r\n  \"MiddleName\": \"{{User1MiddleName}}-Updated\",\r\n  \"email\": \"{{User1Email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/api/users/{{UserId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 update check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{UserToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://{{base_url}}/api/users/{{UserId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Register user 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"User2Email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+							"pm.collectionVariables.set(\"User2Password\", pm.variables.replaceIn('{{$randomPassword}}'));\r",
+							"pm.collectionVariables.set(\"User2FirstName\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+							"pm.collectionVariables.set(\"User2LastName\", pm.variables.replaceIn('{{$randomLastName}}'));\r",
+							"pm.collectionVariables.set(\"User2MiddleName\", pm.variables.replaceIn('{{$randomNamePrefix}}'));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.variables.get(\"User2Email\"));\r",
+							"console.log(pm.variables.get(\"User2Password\"));\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"{{User2FirstName}}\",\r\n  \"lastName\": \"{{User2LastName}}\",\r\n  \"middleName\": \"{{User2MiddleName}}\",\r\n  \"email\": \"{{User2Email}}\",\r\n  \"password\": \"{{User2Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/auth/register"
+			},
+			"response": []
+		},
+		{
+			"name": "Login user 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"User2Token\", pm.response.text());\r",
+							"console.log(pm.collectionVariables.get(\"User2Token\"));\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Email\": \"{{User2Email}}\",\r\n  \"Password\": \"{{User2Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/api/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Update user 1 under user 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"Email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+							"pm.variables.set(\"Password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.collectionVariables.get(\"Email\"));\r",
+							"console.log(pm.collectionVariables.get(\"Password\"));\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{User2Token}}"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"Zoe\",\r\n  \"lastName\": \"Schuster\",\r\n  \"middleName\": \"Ms.\",\r\n  \"email\": \"Zoe@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://{{base_url}}/api/users/users/{{UserId}}"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "UserId",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "UserId",
+			"value": ""
+		},
+		{
+			"key": "Email",
+			"value": ""
+		},
+		{
+			"key": "Password",
+			"value": ""
+		},
+		{
+			"key": "FirstName",
+			"value": ""
+		},
+		{
+			"key": "LastName",
+			"value": ""
+		},
+		{
+			"key": "MiddleName",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": "arch.homework"
+		},
+		{
+			"key": "UserToken",
+			"value": ""
+		},
+		{
+			"key": "User1Email",
+			"value": ""
+		},
+		{
+			"key": "User1Password",
+			"value": ""
+		},
+		{
+			"key": "User1FirstName",
+			"value": ""
+		},
+		{
+			"key": "User1LastName",
+			"value": ""
+		},
+		{
+			"key": "User1MiddleName",
+			"value": ""
+		},
+		{
+			"key": "User1Id",
+			"value": ""
+		},
+		{
+			"key": "User1Token",
+			"value": ""
+		}
+	]
+}
