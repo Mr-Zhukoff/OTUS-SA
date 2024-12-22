@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,7 +16,7 @@ public static class UsersEndpoints
     {
         app.MapGet("/", () => "UserService");
 
-        app.MapGet("/users", async (IUsersRepository userRepository) =>
+        app.MapGet("/users", [AllowAnonymous] async (IUsersRepository userRepository) =>
         {
             var users = await userRepository.GetAllUsers();
             return Results.Ok(users);
@@ -39,22 +40,37 @@ public static class UsersEndpoints
             return Results.Ok(result);
         });
 
-        app.MapPut("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository) =>
+        app.MapPut("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository, HttpRequest request) =>
         {
+            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+
+            if (requestUserId != id)
+                return Results.BadRequest("Modifying another user is not allowed!");
+
             var result = await userRepository.UpdateUser(userForm.ToUser(id));
             return Results.Ok(result);
         });
-        app.MapPatch("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository) =>
+        app.MapPatch("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository, HttpRequest request) =>
         {
+            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+
+            if (requestUserId != id)
+                return Results.BadRequest("Modifying another user is not allowed!");
+
             var result = await userRepository.UpdateUserPartial(userForm.ToUser(id));
             return Results.Ok(result);
         });
-        app.MapDelete("/users", async (int id, IUsersRepository userRepository) =>
+        app.MapDelete("/users", [Authorize] async (int id, IUsersRepository userRepository, HttpRequest request) =>
         {
+            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+
+            if (requestUserId != id)
+                return Results.BadRequest("Deleting another user is not allowed!");
+
             var result = await userRepository.DeleteUser(id);
             return Results.Ok(result);
         });
-        app.MapPost("/login", async (LoginForm loginForm, IUsersRepository userRepository) =>
+        app.MapPost("/login", [AllowAnonymous] async (LoginForm loginForm, IUsersRepository userRepository) =>
         {
             try
             {
@@ -98,7 +114,7 @@ public static class UsersEndpoints
             }
         });
 
-        app.MapPost("/register", async (RegisterForm registerForm, IUsersRepository userRepository) =>
+        app.MapPost("/register", [AllowAnonymous] async (RegisterForm registerForm, IUsersRepository userRepository) =>
         {
             try
             {
@@ -144,5 +160,17 @@ public static class UsersEndpoints
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
+    }
+
+    private static int GetUserIdFromJwt(string authHeader)
+    {
+        if(String.IsNullOrEmpty(authHeader))
+            return -1;
+
+        var token = authHeader.Replace("Bearer ", "");
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(token);
+        var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
+        return int.Parse(userId);
     }
 }
