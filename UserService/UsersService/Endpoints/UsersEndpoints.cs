@@ -39,14 +39,14 @@ public static class UsersEndpoints
             return Results.Ok(result);
         });
 
-        app.MapPut("/users", async (User user, IUsersRepository userRepository) =>
+        app.MapPut("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository) =>
         {
-            var result = await userRepository.UpdateUser(user);
+            var result = await userRepository.UpdateUser(userForm.ToUser(id));
             return Results.Ok(result);
         });
-        app.MapPatch("/users", async (User user, IUsersRepository userRepository) =>
+        app.MapPatch("/users/{id:int}", async (int id, UpdateUserForm userForm, IUsersRepository userRepository) =>
         {
-            var result = await userRepository.UpdateUserPartial(user);
+            var result = await userRepository.UpdateUserPartial(userForm.ToUser(id));
             return Results.Ok(result);
         });
         app.MapDelete("/users", async (int id, IUsersRepository userRepository) =>
