@@ -40,7 +40,7 @@ public class UsersRepository(UsersDbContext context) : IUsersRepository
 
     public async Task<User> GetUserByEmail(string email)
     {
-        var userEntity = await _context.Users.Where(u => u.Email == email.ToLower()).FirstOrDefaultAsync();
+        var userEntity = await _context.Users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefaultAsync();
         return (userEntity == null) ? null : userEntity;
     }
 
@@ -51,7 +51,7 @@ public class UsersRepository(UsersDbContext context) : IUsersRepository
             .SetProperty(p => p.FirstName, p => user.FirstName)
             .SetProperty(p => p.LastName, p => user.LastName)
             .SetProperty(p => p.MiddleName, p => user.MiddleName)
-            .SetProperty(p => p.Email, p => user.Email)
+            .SetProperty(p => p.Email, p => user.Email.ToLower())
             .SetProperty(p => p.PasswordSalt, p => user.PasswordSalt)
             .SetProperty(p => p.PasswordHash, p => user.PasswordHash)
             );
