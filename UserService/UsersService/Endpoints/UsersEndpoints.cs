@@ -146,7 +146,7 @@ public static class UsersEndpoints
             }
         });
 
-        app.MapGet("/resetdb", async (IUsersRepository userRepository) =>
+        app.MapGet("/resetdb", [AllowAnonymous] async (IUsersRepository userRepository) =>
         {
             try
             {
