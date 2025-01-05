@@ -292,7 +292,7 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/auth/register"
+				"url": "http://{{base_url}}/api/users/register"
 			},
 			"response": []
 		},
@@ -313,8 +313,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"User2Token\", pm.response.text());\r",
-							"console.log(pm.collectionVariables.get(\"User2Token\"));\r",
+							"pm.collectionVariables.set(\"User2Token\", pm.response.json());\r",
+							"console.log(pm.collectionVariables.get(\"User1Token\"));\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"  pm.response.to.have.status(200);\r",
 							"});"
@@ -336,7 +336,7 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/auth/login"
+				"url": "http://{{base_url}}/api/users/login"
 			},
 			"response": []
 		},
@@ -387,7 +387,7 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/users/{{UserId}}"
+				"url": "http://{{base_url}}/api/users/users/{{User1Id}}"
 			},
 			"response": []
 		}
@@ -456,6 +456,30 @@
 		},
 		{
 			"key": "User1Token",
+			"value": ""
+		},
+		{
+			"key": "User2Email",
+			"value": ""
+		},
+		{
+			"key": "User2Password",
+			"value": ""
+		},
+		{
+			"key": "User2FirstName",
+			"value": ""
+		},
+		{
+			"key": "User2LastName",
+			"value": ""
+		},
+		{
+			"key": "User2MiddleName",
+			"value": ""
+		},
+		{
+			"key": "User2Token",
 			"value": ""
 		}
 	]
