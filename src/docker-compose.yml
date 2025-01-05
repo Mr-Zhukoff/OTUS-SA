@@ -22,6 +22,14 @@ services:
     ports:
         - "8081:8080"
 
+  notificationsservice:
+    image: ${DOCKER_REGISTRY-}notificationsservice
+    build:
+      context: .
+      dockerfile: NotificationsService/Dockerfile
+    ports:
+        - "8082:8080"
+
   usersdb:
     image: postgres:17.0
     container_name: usersdb
@@ -45,6 +53,18 @@ services:
       - ./.postgress/billing:/var/lib/postgresql/data
     ports:
       - 5433:5432
+
+  notificationsdb:
+    image: postgres:17.0
+    container_name: notificationsdb
+    environment:
+      - POSTGRES_DB=notifications
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=12345678
+    volumes:
+      - ./.postgress/notifications:/var/lib/postgresql/data
+    ports:
+      - 5434:5432
 
   grafana:
     container_name: grafana

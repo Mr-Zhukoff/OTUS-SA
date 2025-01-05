@@ -14,9 +14,13 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsersService", "UsersService\UsersService.csproj", "{C172F871-5947-43BE-869D-68C4D8279124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BillingService", "BillingService\BillingService.csproj", "{1784B69B-946F-4576-942E-1D802040CDEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillingService", "BillingService\BillingService.csproj", "{1784B69B-946F-4576-942E-1D802040CDEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLogic", "..\CoreLogic\CoreLogic.csproj", "{7BD9B70A-050B-41D5-AA91-8FDE7C6212A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationsService", "NotificationsService\NotificationsService.csproj", "{EB0784DB-EE7B-472A-9C62-2FE8612029E8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrdersService", "OrdersService\OrdersService.csproj", "{4336D15A-4304-491A-B168-F12A5E3A2D94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreLogic", "CoreLogic\CoreLogic.csproj", "{70678881-A70A-4407-9EF9-F1273BD7CD1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,10 +46,18 @@ Global
 		{1784B69B-946F-4576-942E-1D802040CDEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1784B69B-946F-4576-942E-1D802040CDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1784B69B-946F-4576-942E-1D802040CDEC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BD9B70A-050B-41D5-AA91-8FDE7C6212A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BD9B70A-050B-41D5-AA91-8FDE7C6212A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BD9B70A-050B-41D5-AA91-8FDE7C6212A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BD9B70A-050B-41D5-AA91-8FDE7C6212A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0784DB-EE7B-472A-9C62-2FE8612029E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0784DB-EE7B-472A-9C62-2FE8612029E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0784DB-EE7B-472A-9C62-2FE8612029E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0784DB-EE7B-472A-9C62-2FE8612029E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4336D15A-4304-491A-B168-F12A5E3A2D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4336D15A-4304-491A-B168-F12A5E3A2D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4336D15A-4304-491A-B168-F12A5E3A2D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4336D15A-4304-491A-B168-F12A5E3A2D94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

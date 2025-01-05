@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace UsersService.Security;
+namespace CoreLogic.Security;
 
 public class PasswordHasher
 {

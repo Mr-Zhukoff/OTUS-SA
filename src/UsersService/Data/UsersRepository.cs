@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CoreLogic.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-using CoreLogic.Models;
 
 namespace UsersService.Data;
 

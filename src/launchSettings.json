@@ -6,7 +6,8 @@
       "serviceActions": {
         "userserviceapi": "StartDebugging",
         "usersservice": "StartDebugging",
-        "billingservice": "StartDebugging"
+        "billingservice": "StartDebugging",
+        "notificationsservice": "StartDebugging"
       }
     }
   }

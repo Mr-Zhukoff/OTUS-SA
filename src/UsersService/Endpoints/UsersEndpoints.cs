@@ -1,4 +1,5 @@
 ﻿using CoreLogic.Models;
+using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -7,7 +8,6 @@ using System.Security.Claims;
 using System.Text;
 using UsersService.Data;
 using UsersService.Models;
-using UsersService.Security;
 
 namespace UsersService.Endpoints;
 
