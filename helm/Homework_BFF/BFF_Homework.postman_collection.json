@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "edbbb40c-dbf2-42b5-8874-616fc4477b3a",
 		"name": "BFF_Homework",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2482108",
 		"_collection_link": "https://zhukoff-5467.postman.co/workspace/OTUS~c27f666f-b9d2-4d5b-9ced-c380e10f33bd/collection/2482108-edbbb40c-dbf2-42b5-8874-616fc4477b3a?action=share&source=collection_link&creator=2482108"
 	},
@@ -19,7 +19,7 @@
 							"});\r",
 							"pm.test(\"HealthCheck is OK\", function () {\r",
 							"    let result = pm.response.json();\r",
-							"    pm.expect(result.status).to.equal(\"Healthy\");\r",
+							"    pm.expect(result.status).to.equal(\"OK\");\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -30,7 +30,18 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://arch.homework/hc"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/health",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"health"
+					]
+				}
 			},
 			"response": []
 		},
@@ -84,7 +95,18 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/register"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/register",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				}
 			},
 			"response": []
 		},
@@ -95,10 +117,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"  pm.response.to.have.status(200);\r",
-							"});\r",
-							"Modifying another user is not allowed!"
+							"pm.test(\"Status code is 401\", function () {\r",
+							"  pm.response.to.have.status(401);\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -121,7 +142,19 @@
 				},
 				"method": "GET",
 				"header": [],
-				"url": "http://{{base_url}}/api/users/{{User1Id}}"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/users/{{User1Id}}",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"users",
+						"{{User1Id}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -165,7 +198,18 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/login"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/login",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
 			},
 			"response": []
 		},
@@ -200,9 +244,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": {
-						"token": "{{User1Token}}"
-					}
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{User1Token}}",
+							"type": "string"
+						}
+					]
 				},
 				"method": "PATCH",
 				"header": [],
@@ -215,7 +263,19 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/{{UserId}}"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/users/{{User1Id}}",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"users",
+						"{{User1Id}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -238,13 +298,29 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": {
-						"token": "{{UserToken}}"
-					}
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{User1Token}}",
+							"type": "string"
+						}
+					]
 				},
 				"method": "GET",
 				"header": [],
-				"url": "http://{{base_url}}/api/users/{{UserId}}"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/users/{{User1Id}}",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"users",
+						"{{User1Id}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -292,7 +368,18 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/register"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/register",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				}
 			},
 			"response": []
 		},
@@ -336,7 +423,18 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/login"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/login",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
 			},
 			"response": []
 		},
@@ -361,7 +459,7 @@
 							"console.log(pm.collectionVariables.get(\"Email\"));\r",
 							"console.log(pm.collectionVariables.get(\"Password\"));\r",
 							"pm.test(\"Status code is 200\", function () {\r",
-							"  pm.response.to.have.status(200);\r",
+							"  pm.response.to.have.status(400);\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -372,9 +470,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": {
-						"token": "{{User2Token}}"
-					}
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{User2Token}}",
+							"type": "string"
+						}
+					]
 				},
 				"method": "PATCH",
 				"header": [],
@@ -387,7 +489,19 @@
 						}
 					}
 				},
-				"url": "http://{{base_url}}/api/users/users/{{User1Id}}"
+				"url": {
+					"raw": "http://{{base_url}}/api/users/users/{{User1Id}}",
+					"protocol": "http",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"users",
+						"{{User1Id}}"
+					]
+				}
 			},
 			"response": []
 		}
