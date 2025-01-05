@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CoreLogic\CoreLogic.csproj" />
+    <ProjectReference Include="..\CoreLogic\CoreLogic.csproj" />
   </ItemGroup>
 
 </Project>
