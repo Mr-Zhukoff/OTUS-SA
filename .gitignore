@@ -396,5 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/UserService/.postgress/users
 /src/.postgress/users
