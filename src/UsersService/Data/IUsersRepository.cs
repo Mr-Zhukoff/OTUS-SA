@@ -1,4 +1,4 @@
-﻿using UsersService.Models;
+﻿using CoreLogic.Models;
 
 namespace UsersService.Data;
 

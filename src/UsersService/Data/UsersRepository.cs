@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Serilog;
 using System.Data;
-using UsersService.Models;
+using CoreLogic.Models;
 
 namespace UsersService.Data;
-
 
 public class UsersRepository(UsersDbContext context) : IUsersRepository
 {

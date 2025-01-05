@@ -1,4 +1,4 @@
-﻿namespace UsersService.Models;
+﻿namespace CoreLogic.Models;
 
 public class UpdateUserForm
 {

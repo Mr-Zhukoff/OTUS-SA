@@ -14,6 +14,14 @@ services:
         usersdb:
             condition: service_started
 
+  billingservice:
+    image: ${DOCKER_REGISTRY-}billingservice
+    build:
+      context: .
+      dockerfile: BillingService/Dockerfile
+    ports:
+        - "8081:8080"
+
   usersdb:
     image: postgres:17.0
     container_name: usersdb
@@ -25,6 +33,18 @@ services:
       - ./.postgress/users:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  billingdb:
+    image: postgres:17.0
+    container_name: billingdb
+    environment:
+      - POSTGRES_DB=billing
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=12345678
+    volumes:
+      - ./.postgress/billing:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
 
   grafana:
     container_name: grafana

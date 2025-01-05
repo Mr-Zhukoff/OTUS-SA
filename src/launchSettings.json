@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "userserviceapi": "StartDebugging",
-        "usersservice": "StartDebugging"
+        "usersservice": "StartDebugging",
+        "billingservice": "StartDebugging"
       }
     }
   }
