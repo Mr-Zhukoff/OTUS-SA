@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using NotificationsService.Data;
 using NotificationsService.Models;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace NotificationsService.Endpoints;
@@ -56,15 +57,30 @@ public static class NotificationsEndpoints
             var result = await notificationsRepository.UpdateNotificationPartial(userForm.ToNotification(id));
             return Results.Ok(result);
         });
-        app.MapDelete("/notifications", [Authorize] async (int id, INotificationsRepository userRepository, HttpRequest request) =>
+        app.MapDelete("/notifications", [Authorize] async (int id, INotificationsRepository notificationsRepository, HttpRequest request) =>
         {
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Deleting another user is not allowed!");
 
-            var result = await userRepository.DeleteNotification(id);
+            var result = await notificationsRepository.DeleteNotification(id);
             return Results.Ok(result);
+        });
+
+        app.MapGet("/resetdb", [AllowAnonymous] async (INotificationsRepository notificationsRepository) =>
+        {
+            try
+            {
+                Log.Information($"Resetting Users DB");
+                var result = await notificationsRepository.ResetDb();
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                return Results.Problem(ex.Message, null, 500, "Register error!");
+            }
         });
     }
 

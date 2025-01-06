@@ -127,6 +127,7 @@ app.MapGet("/health", [AllowAnonymous] () =>
         return Results.Ok(new
         {
             status = "OK",
+            app = Assembly.GetExecutingAssembly().FullName,
             version = fvi.FileVersion,
             machinename = Environment.MachineName,
             osversion = Environment.OSVersion.VersionString,

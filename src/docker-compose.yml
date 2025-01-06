@@ -30,6 +30,14 @@ services:
     ports:
         - "8082:8080"
 
+  ordersservice:
+    image: ${DOCKER_REGISTRY-}ordersservice
+    build:
+      context: .
+      dockerfile: OrdersService/Dockerfile
+    ports:
+        - "8083:8080"
+
   usersdb:
     image: postgres:17.0
     container_name: usersdb
@@ -65,6 +73,18 @@ services:
       - ./.postgress/notifications:/var/lib/postgresql/data
     ports:
       - 5434:5432
+
+  ordersdb:
+    image: postgres:17.0
+    container_name: ordersdb
+    environment:
+      - POSTGRES_DB=orders
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=12345678
+    volumes:
+      - ./.postgress/orders:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
 
   grafana:
     container_name: grafana
