@@ -4,8 +4,6 @@ namespace BillingService.Models;
 
 public class UpdateAccountForm
 {
-    public int UserId { get; set; }
-
     public string Number { get; set; }
 
     public string Description { get; set; }
@@ -14,9 +12,9 @@ public class UpdateAccountForm
 
     public override string ToString()
     {
-        return $"{UserId} {Number} {Description}";
+        return $"{Number} {Description}";
     }
-    public Account ToUser(int accountId)
+    public Account ToAccount(int accountId = 0)
     {
         return new Account
         {

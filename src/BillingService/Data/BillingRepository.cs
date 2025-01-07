@@ -1,6 +1,5 @@
 ﻿using CoreLogic.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
 
 namespace BillingService.Data;
 
@@ -19,6 +18,8 @@ public class BillingRepository(BillingDbContext context) : IBillingRepository
     public async Task<Transaction> CreateTransaction(Transaction transaction)
     {
         var result = await _context.Transactions.AddAsync(transaction);
+        await _context.Accounts.Where(e => e.Id == result.Entity.AccountId).ExecuteUpdateAsync(
+            t => t.SetProperty(u => u.Balance, u => u.Balance + result.Entity.Amount));
         await _context.SaveChangesAsync();
 
         return result.Entity;
@@ -51,9 +52,19 @@ public class BillingRepository(BillingDbContext context) : IBillingRepository
         return accounts.ToList();
     }
 
+    public async Task<List<Account>> GetAllUserAccounts(int userId)
+    {
+        if (userId == 0)
+            return new List<Account>();
+
+        var accounts = await _context.Accounts.Where(x => x.UserId == userId).ToListAsync();
+
+        return accounts.ToList();
+    }
+
     public async Task<List<Transaction>> GetAllTransactions()
     {
-        var transactions = await _context.Transactions.AsNoTracking().ToListAsync();
+        var transactions = await _context.Transactions.AsNoTracking().OrderBy(t => t.AccountId).ThenByDescending(c => c.CreatedOn).ToListAsync();
 
         return transactions.ToList();
     }
@@ -66,7 +77,7 @@ public class BillingRepository(BillingDbContext context) : IBillingRepository
 
     public async Task<List<Transaction>> GetTransactionsByAccountId(int accountId)
     {
-        var transactions = await _context.Transactions.Where(u => u.AccountId == accountId).ToListAsync();
+        var transactions = await _context.Transactions.Where(u => u.AccountId == accountId).OrderByDescending(c => c.CreatedOn).ToListAsync();
 
         return transactions.ToList();
     }
@@ -80,33 +91,15 @@ public class BillingRepository(BillingDbContext context) : IBillingRepository
 
     public async Task<int> UpdateAccount(Account account)
     {
-        await _context.Accounts.Where(e => e.Id == account.Id)
-            .ExecuteUpdateAsync(x => x
-            .SetProperty(p => p.UserId, p => account.UserId)
-            .SetProperty(p => p.Number, p => account.Number)
-            .SetProperty(p => p.Description, p => account.Description)
-            .SetProperty(p => p.Balance, p => account.Balance)
-            );
-
-        await _context.SaveChangesAsync();
-
-        return account.Id;
-    }
-
-    public async Task<int> UpdateAccountPartial(Account account)
-    {
         var existingAccount = await _context.Accounts.Where(e => e.Id == account.Id).FirstOrDefaultAsync();
 
         if (existingAccount == null)
-            return 0;
+            return -1;
 
-        if (account.UserId != existingAccount.UserId)
-            existingAccount.UserId = account.UserId;
-
-        if (account.Number != null)
+        if (account.Number != null && existingAccount.Number != account.Number)
             existingAccount.Number = account.Number;
 
-        if (account.Description != null)
+        if (account.Description != null && existingAccount.Description != account.Description)
             existingAccount.Description = account.Description;
 
         if (account.Balance != existingAccount.Balance)

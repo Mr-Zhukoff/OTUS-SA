@@ -22,4 +22,12 @@ public class Transaction
     [Column("amount")]
     [Required]
     public decimal Amount { get; set; }
+
+    [Column("description")]
+    [Required]
+    public string Description { get; set; }
+
+    [Column("createdon")]
+    [Required]
+    public DateTime CreatedOn { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using BillingService.Data;
 using BillingService.Models;
 using CoreLogic.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,12 +12,12 @@ public static class BillingEndpoints
 {
     public static void AddBillingEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
     {
-        app.MapGet("/", () => "BillingService");
+        app.MapGet("/", [AllowAnonymous] () => "BillingService");
 
-        app.MapGet("/accounts", [AllowAnonymous] async (IBillingRepository billingRepository) =>
+        app.MapGet("/accounts", async (IBillingRepository billingRepository, HttpRequest request) =>
         {
-            var users = await billingRepository.GetAllAccounts();
-            return Results.Ok(users);
+            var accounts = await billingRepository.GetAllUserAccounts(GetUserIdFromJwt(request.Headers["Authorization"]));
+            return Results.Ok(accounts);
         });
 
         app.MapGet("/accounts/{id:int}", async (int id, IBillingRepository billingRepository) =>
@@ -25,8 +26,12 @@ public static class BillingEndpoints
             return Results.Ok(account);
         });
 
-        app.MapPost("/accounts", async (Account account, IBillingRepository billingRepository) =>
+        app.MapPost("/accounts", async (UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
+            int userId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = accountForm.ToAccount();
+            account.UserId = userId;
+            account.Number = Guid.NewGuid().ToString("N").ToUpper();
             var result = await billingRepository.CreateAccount(account);
             return Results.Ok(result);
         });
@@ -34,41 +39,81 @@ public static class BillingEndpoints
         app.MapPut("/accounts/{id:int}", async (int id, UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != id)
-                return Results.BadRequest("Modifying another user is not allowed!");
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Modifying another user accountForm is not allowed!");
 
-            var result = await billingRepository.UpdateAccount(accountForm.ToUser(id));
+            var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
             return Results.Ok(result);
         });
 
         app.MapPatch("/accounts/{id:int}", async (int id, UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != id)
-                return Results.BadRequest("Modifying another user is not allowed!");
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Modifying another user accountForm is not allowed!");
 
-            var result = await billingRepository.UpdateAccountPartial(accountForm.ToUser(id));
+            var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
             return Results.Ok(result);
         });
 
         app.MapDelete("/accounts", async (int id, IBillingRepository billingRepository, HttpRequest request) =>
         {
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != id)
-                return Results.BadRequest("Deleting another user is not allowed!");
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Deleting another user accountForm is not allowed!");
+
+            if (account.Balance != 0)
+                return Results.BadRequest("Deleting non zero accountForm is not allowed!");
 
             var result = await billingRepository.DeleteAccount(id);
             return Results.Ok(result);
         });
 
-        app.MapGet("/transactions", async (IBillingRepository billingRepository) =>
+        app.MapGet("account/{accountid:int}/transactions", async (int accountid, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            var transactions = await billingRepository.GetAllTransactions();
+            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = await billingRepository.GetAccountById(accountid);
+
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Access another user account data is not allowed!");
+
+            var transactions = await billingRepository.GetTransactionsByAccountId(accountid);
+
             return Results.Ok(transactions);
         });
+
+        app.MapPost("transactions", async (UpdateTransactionForm transactionForm, IBillingRepository billingRepository, HttpRequest request) =>
+        {
+            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            var account = await billingRepository.GetAccountById(transactionForm.AccountId);
+
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Access another user account data is not allowed!");
+
+            var transaction = new Transaction()
+            {
+                AccountId = account.Id,
+                UserId = requestUserId,
+                Amount = transactionForm.Amount,
+                Description = transactionForm.Description,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            var result = await billingRepository.CreateTransaction(transaction);
+            return Results.Ok(result);
+        });
+
+        //app.MapGet("/transactions", async (IBillingRepository billingRepository) =>
+        //{
+        //    var transactions = await billingRepository.GetAllTransactions();
+        //    return Results.Ok(transactions);
+        //});
 
         app.MapGet("/transactions/{id:int}", async (int id, IBillingRepository billingRepository) =>
         {
@@ -76,17 +121,7 @@ public static class BillingEndpoints
             return Results.Ok(transaction);
         });
 
-        app.MapGet("/transactions/account/{accountid:int}", async (int accountid, IBillingRepository billingRepository) =>
-        {
-            var transaction = await billingRepository.GetTransactionsByAccountId(accountid);
-            return Results.Ok(transaction);
-        });
 
-        app.MapPost("/transactions", async (Transaction transaction, IBillingRepository billingRepository) =>
-        {
-            var result = await billingRepository.CreateTransaction(transaction);
-            return Results.Ok(result);
-        });
 
         app.MapGet("/resetdb", [AllowAnonymous] async (IBillingRepository billingRepository) =>
         {
