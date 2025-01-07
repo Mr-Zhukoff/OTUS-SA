@@ -1,10 +1,9 @@
 ﻿using BillingService.Data;
 using BillingService.Models;
 using CoreLogic.Models;
-using MediatR;
+using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace BillingService.Endpoints;
 
@@ -16,7 +15,7 @@ public static class BillingEndpoints
 
         app.MapGet("/accounts", async (IBillingRepository billingRepository, HttpRequest request) =>
         {
-            var accounts = await billingRepository.GetAllUserAccounts(GetUserIdFromJwt(request.Headers["Authorization"]));
+            var accounts = await billingRepository.GetAllUserAccounts(PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]));
             return Results.Ok(accounts);
         });
 
@@ -28,17 +27,17 @@ public static class BillingEndpoints
 
         app.MapPost("/accounts", async (UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int userId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int userId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = accountForm.ToAccount();
             account.UserId = userId;
             account.Number = Guid.NewGuid().ToString("N").ToUpper();
             var result = await billingRepository.CreateAccount(account);
-            return Results.Ok(result);
+            return Results.Ok(result.Id);
         });
 
         app.MapPut("/accounts/{id:int}", async (int id, UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
@@ -50,7 +49,7 @@ public static class BillingEndpoints
 
         app.MapPatch("/accounts/{id:int}", async (int id, UpdateAccountForm accountForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
@@ -62,7 +61,7 @@ public static class BillingEndpoints
 
         app.MapDelete("/accounts", async (int id, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
@@ -77,7 +76,7 @@ public static class BillingEndpoints
 
         app.MapGet("account/{accountid:int}/transactions", async (int accountid, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(accountid);
 
             if (requestUserId != account.UserId)
@@ -90,7 +89,7 @@ public static class BillingEndpoints
 
         app.MapPost("transactions", async (UpdateTransactionForm transactionForm, IBillingRepository billingRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(transactionForm.AccountId);
 
             if (requestUserId != account.UserId)
@@ -106,7 +105,7 @@ public static class BillingEndpoints
             };
 
             var result = await billingRepository.CreateTransaction(transaction);
-            return Results.Ok(result);
+            return Results.Ok(result.Id);
         });
 
         //app.MapGet("/transactions", async (IBillingRepository billingRepository) =>
@@ -115,9 +114,20 @@ public static class BillingEndpoints
         //    return Results.Ok(transactions);
         //});
 
-        app.MapGet("/transactions/{id:int}", async (int id, IBillingRepository billingRepository) =>
+        app.MapGet("/transactions/{id:int}", async (int id, IBillingRepository billingRepository, HttpRequest request) =>
         {
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
+
             var transaction = await billingRepository.GetTransactionById(id);
+
+            if(transaction == null)
+                return Results.NotFound("Transaction is not found!");
+
+            var account = await billingRepository.GetAccountById(transaction.AccountId);
+
+            if (requestUserId != account.UserId)
+                return Results.BadRequest("Access another user account data is not allowed!");
+
             return Results.Ok(transaction);
         });
 
@@ -137,17 +147,5 @@ public static class BillingEndpoints
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
-    }
-
-    private static int GetUserIdFromJwt(string authHeader)
-    {
-        if (String.IsNullOrEmpty(authHeader))
-            return -1;
-
-        var token = authHeader.Replace("Bearer ", "");
-        var handler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = handler.ReadJwtToken(token);
-        var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
-        return int.Parse(userId);
     }
 }

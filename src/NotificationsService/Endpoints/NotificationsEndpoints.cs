@@ -1,4 +1,5 @@
 ﻿using CoreLogic.Models;
+using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using NotificationsService.Data;
 using NotificationsService.Models;
@@ -39,7 +40,7 @@ public static class NotificationsEndpoints
 
         app.MapPut("/notifications/{id:int}", async (int id, UpdateNotificationForm notificationsForm, INotificationsRepository notificationsRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another user is not allowed!");
@@ -49,7 +50,7 @@ public static class NotificationsEndpoints
         });
         app.MapPatch("/notifications/{id:int}", async (int id, UpdateNotificationForm userForm, INotificationsRepository notificationsRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another user is not allowed!");
@@ -59,7 +60,7 @@ public static class NotificationsEndpoints
         });
         app.MapDelete("/notifications", [Authorize] async (int id, INotificationsRepository notificationsRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Deleting another user is not allowed!");
@@ -82,17 +83,5 @@ public static class NotificationsEndpoints
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
-    }
-
-    private static int GetUserIdFromJwt(string authHeader)
-    {
-        if (String.IsNullOrEmpty(authHeader))
-            return -1;
-
-        var token = authHeader.Replace("Bearer ", "");
-        var handler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = handler.ReadJwtToken(token);
-        var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
-        return int.Parse(userId);
     }
 }

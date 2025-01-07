@@ -1,9 +1,10 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CoreLogic.Security;
 
-public class PasswordHasher
+public static class PasswordHasher
 {
     public static string ComputeHash(string password, string salt, string pepper, int iteration = 1)
     {
@@ -24,5 +25,16 @@ public class PasswordHasher
         rng.GetBytes(byteSalt);
         var salt = Convert.ToBase64String(byteSalt);
         return salt;
+    }
+    public static int GetUserIdFromJwt(string authHeader)
+    {
+        if (String.IsNullOrEmpty(authHeader))
+            return -1;
+
+        var token = authHeader.Replace("Bearer ", "");
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(token);
+        var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
+        return int.Parse(userId);
     }
 }

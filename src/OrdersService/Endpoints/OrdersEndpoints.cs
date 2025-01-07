@@ -1,12 +1,11 @@
 ﻿using Confluent.Kafka;
 using CoreLogic.Models;
-using MediatR;
+using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using OrdersService.Data;
 using OrdersService.Models;
 using Serilog;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace OrdersService.Endpoints;
 
@@ -20,7 +19,7 @@ public static class OrdersEndpoints
 
         app.MapGet("/orders", async (IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            var orders = await ordersRepository.GetAllUserOrders(GetUserIdFromJwt(request.Headers["Authorization"]));
+            var orders = await ordersRepository.GetAllUserOrders(PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]));
             return Results.Ok(orders);
         });
 
@@ -38,7 +37,7 @@ public static class OrdersEndpoints
 
         app.MapPut("/orders/{id:int}", async (int id, UpdateOrderForm userForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another orderForm is not allowed!");
@@ -48,7 +47,7 @@ public static class OrdersEndpoints
         });
         app.MapPatch("/orders/{id:int}", async (int id, UpdateOrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another orderForm is not allowed!");
@@ -58,7 +57,7 @@ public static class OrdersEndpoints
         });
         app.MapDelete("/orders", [Authorize] async (int id, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Deleting another orderForm is not allowed!");
@@ -100,17 +99,5 @@ public static class OrdersEndpoints
                 return Results.Problem(ex.Message, null, 500, "Sendnotification error!");
             }
         });
-    }
-
-    private static int GetUserIdFromJwt(string authHeader)
-    {
-        if (String.IsNullOrEmpty(authHeader))
-            return -1;
-
-        var token = authHeader.Replace("Bearer ", "");
-        var handler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = handler.ReadJwtToken(token);
-        var userId = jwtSecurityToken.Claims.First(claim => claim.Type == "id").Value;
-        return int.Parse(userId);
     }
 }
