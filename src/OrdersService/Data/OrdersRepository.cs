@@ -27,6 +27,16 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         return orders.ToList();
     }
 
+    public async Task<List<Order>> GetAllUserOrders(int userId)
+    {
+        if (userId == 0) 
+            return new List<Order>();
+
+        var orders = await _context.Orders.Where(x => x.UserId == userId).ToListAsync();
+
+        return orders.ToList();
+    }
+
     public async Task<Order> GetOrderById(int orderId)
     {
         var order = await _context.Orders.Where(u => u.Id == orderId).FirstOrDefaultAsync();
@@ -35,45 +45,29 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
 
     public async Task<int> UpdateOrder(Order order)
     {
-        await _context.Orders.Where(e => e.Id == order.Id)
-            .ExecuteUpdateAsync(x => x
-            .SetProperty(p => p.UserId, p => order.UserId)
-            .SetProperty(p => p.AccountId, p => order.AccountId)
-            .SetProperty(p => p.Title, p => order.Title)
-            .SetProperty(p => p.Description, p => order.Description)
-            .SetProperty(p => p.Amount, p => order.Amount)
-            );
+        var currentOrder = await _context.Orders.Where(u => u.Id == order.Id).FirstOrDefaultAsync();
 
-        await _context.SaveChangesAsync();
-
-        return order.Id;
-    }
-
-    public async Task<int> UpdateOrderPartial(Order orderorder)
-    {
-        var userEntity = await _context.Orders.Where(u => u.Id == orderorder.Id).FirstOrDefaultAsync();
-
-        if (userEntity == null)
+        if (currentOrder == null)
             return 0;
 
-        if (orderorder.UserId != 0)
-            userEntity.UserId = orderorder.UserId;
+        if (order.UserId != 0)
+            currentOrder.UserId = order.UserId;
 
-        if (orderorder.AccountId != 0)
-            userEntity.AccountId = orderorder.AccountId;
+        if (order.AccountId != 0)
+            currentOrder.AccountId = order.AccountId;
 
-        if (orderorder.Title != null)
-            userEntity.Title = orderorder.Title;
+        if (order.Title != null)
+            currentOrder.Title = order.Title;
 
-        if (orderorder.Description != null)
-            userEntity.Description = orderorder.Description;
+        if (order.Description != null)
+            currentOrder.Description = order.Description;
 
-        if (orderorder.Amount != 0)
-            userEntity.Amount = orderorder.Amount;
+        if (order.Amount != 0)
+            currentOrder.Amount = order.Amount;
 
-        _context.Orders.Update(userEntity);
+        _context.Orders.Update(currentOrder);
         await _context.SaveChangesAsync();
-        return orderorder.Id;
+        return order.Id;
     }
 
     public async Task<bool> ResetDb()

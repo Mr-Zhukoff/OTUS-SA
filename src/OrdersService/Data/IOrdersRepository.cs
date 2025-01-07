@@ -10,11 +10,11 @@ public interface IOrdersRepository
 
     public Task<List<Order>> GetAllOrders();
 
+    public Task<List<Order>> GetAllUserOrders(int userId);
+
     public Task<Order> GetOrderById(int orderId);
 
     public Task<int> UpdateOrder(Order order);
-
-    public Task<int> UpdateOrderPartial(Order orderorder);
 
     public Task<bool> ResetDb();
 }

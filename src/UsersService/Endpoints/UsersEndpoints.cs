@@ -15,9 +15,9 @@ public static class UsersEndpoints
 {
     public static void AddUsersEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
     {
-        app.MapGet("/", () => "UserService");
+        app.MapGet("/", [AllowAnonymous] () => "UserService");
 
-        app.MapGet("/users", [AllowAnonymous] async (IUsersRepository userRepository) =>
+        app.MapGet("/users", async (IUsersRepository userRepository) =>
         {
             var users = await userRepository.GetAllUsers();
             return Results.Ok(users);

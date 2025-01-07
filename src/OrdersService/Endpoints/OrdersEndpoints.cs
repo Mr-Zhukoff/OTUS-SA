@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using CoreLogic.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using OrdersService.Data;
@@ -11,15 +12,15 @@ namespace OrdersService.Endpoints;
 
 public static class OrdersEndpoints
 {
-    private const string _topic = "order-events";
+    private const string _topic = "orderForm-events";
 
     public static void AddOrdersEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
     {
-        app.MapGet("/", () => "OrderService");
+        app.MapGet("/", [AllowAnonymous] () => "OrderService");
 
-        app.MapGet("/orders", [AllowAnonymous] async (IOrdersRepository ordersRepository) =>
+        app.MapGet("/orders", async (IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            var orders = await ordersRepository.GetAllOrders();
+            var orders = await ordersRepository.GetAllUserOrders(GetUserIdFromJwt(request.Headers["Authorization"]));
             return Results.Ok(orders);
         });
 
@@ -29,9 +30,9 @@ public static class OrdersEndpoints
             return Results.Ok(order);
         });
 
-        app.MapPost("/orders", async (Order order, IOrdersRepository ordersRepository) =>
+        app.MapPost("/orders", async (UpdateOrderForm orderForm, IOrdersRepository ordersRepository) =>
         {
-            var result = await ordersRepository.CreateOrder(order);
+            var result = await ordersRepository.CreateOrder(orderForm.ToOrder());
             return Results.Ok(result);
         });
 
@@ -40,7 +41,7 @@ public static class OrdersEndpoints
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
-                return Results.BadRequest("Modifying another order is not allowed!");
+                return Results.BadRequest("Modifying another orderForm is not allowed!");
 
             var result = await ordersRepository.UpdateOrder(userForm.ToOrder(id));
             return Results.Ok(result);
@@ -50,9 +51,9 @@ public static class OrdersEndpoints
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
-                return Results.BadRequest("Modifying another order is not allowed!");
+                return Results.BadRequest("Modifying another orderForm is not allowed!");
 
-            var result = await ordersRepository.UpdateOrderPartial(orderForm.ToOrder(id));
+            var result = await ordersRepository.UpdateOrder(orderForm.ToOrder(id));
             return Results.Ok(result);
         });
         app.MapDelete("/orders", [Authorize] async (int id, IOrdersRepository ordersRepository, HttpRequest request) =>
@@ -60,7 +61,7 @@ public static class OrdersEndpoints
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
-                return Results.BadRequest("Deleting another order is not allowed!");
+                return Results.BadRequest("Deleting another orderForm is not allowed!");
 
             var result = await ordersRepository.DeleteOrder(id);
             return Results.Ok(result);
