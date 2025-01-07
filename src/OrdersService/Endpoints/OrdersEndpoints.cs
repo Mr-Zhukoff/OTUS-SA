@@ -1,5 +1,7 @@
-﻿using CoreLogic.Models;
+﻿using Confluent.Kafka;
+using CoreLogic.Models;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 using OrdersService.Data;
 using OrdersService.Models;
 using Serilog;
@@ -9,9 +11,11 @@ namespace OrdersService.Endpoints;
 
 public static class OrdersEndpoints
 {
+    private const string _topic = "order-events";
+
     public static void AddOrdersEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
     {
-        app.MapGet("/", () => "UserService");
+        app.MapGet("/", () => "OrderService");
 
         app.MapGet("/orders", [AllowAnonymous] async (IOrdersRepository ordersRepository) =>
         {
@@ -21,8 +25,8 @@ public static class OrdersEndpoints
 
         app.MapGet("/orders/{id:int}", async (int id, IOrdersRepository ordersRepository) =>
         {
-            var user = await ordersRepository.GetOrderById(id);
-            return Results.Ok(user);
+            var order = await ordersRepository.GetOrderById(id);
+            return Results.Ok(order);
         });
 
         app.MapPost("/orders", async (Order order, IOrdersRepository ordersRepository) =>
@@ -38,17 +42,17 @@ public static class OrdersEndpoints
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another order is not allowed!");
 
-            var result = await ordersRepository.UpdateUser(userForm.ToOrder(id));
+            var result = await ordersRepository.UpdateOrder(userForm.ToOrder(id));
             return Results.Ok(result);
         });
-        app.MapPatch("/orders/{id:int}", async (int id, UpdateOrderForm userForm, IOrdersRepository ordersRepository, HttpRequest request) =>
+        app.MapPatch("/orders/{id:int}", async (int id, UpdateOrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
             int requestUserId = GetUserIdFromJwt(request.Headers["Authorization"]);
 
             if (requestUserId != id)
                 return Results.BadRequest("Modifying another order is not allowed!");
 
-            var result = await ordersRepository.UpdateUserPartial(userForm.ToOrder(id));
+            var result = await ordersRepository.UpdateOrderPartial(orderForm.ToOrder(id));
             return Results.Ok(result);
         });
         app.MapDelete("/orders", [Authorize] async (int id, IOrdersRepository ordersRepository, HttpRequest request) =>
@@ -73,7 +77,26 @@ public static class OrdersEndpoints
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message);
-                return Results.Problem(ex.Message, null, 500, "Register error!");
+                return Results.Problem(ex.Message, null, 500, "ResetDb error!");
+            }
+        });
+
+        app.MapPost("/sendnotification", [AllowAnonymous] async (Order order, IOrdersRepository ordersRepository, IProducer<string, string> producer) =>
+        {
+            try
+            {
+                Log.Information($"Sending notification");
+                var kafkaMessage = new Message<string, string>
+                {
+                    Value = JsonConvert.SerializeObject(order)
+                };
+                await producer.ProduceAsync(_topic, kafkaMessage);
+                return Results.Ok($"Order placed successfully. topic {_topic}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                return Results.Problem(ex.Message, null, 500, "Sendnotification error!");
             }
         });
     }

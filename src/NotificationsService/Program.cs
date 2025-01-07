@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ using NotificationsService;
 using NotificationsService.Data;
 using NotificationsService.Endpoints;
 using NotificationsService.Middlewares;
+using NotificationsService.Workers;
 using Serilog;
 using System.Reflection;
 using System.Text;
@@ -25,6 +27,13 @@ if (String.IsNullOrEmpty(seqUrl))
 string pgConnStr = Environment.GetEnvironmentVariable("PG_CONN_STR");
 if (String.IsNullOrEmpty(pgConnStr))
     pgConnStr = builder.Configuration.GetConnectionString("PgDb");
+
+var consumerConfig = new ConsumerConfig
+{
+    BootstrapServers = builder.Configuration.GetSection("Kafka:BootstrapServers").Get<string>(),
+    GroupId = "order-consumer",
+    AutoOffsetReset = AutoOffsetReset.Earliest
+};
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  .AddJwtBearer(options =>
@@ -48,6 +57,10 @@ builder.Services.AddAuthorization(options =>
       .RequireAuthenticatedUser()
       .Build();
 });
+
+builder.Services.AddSingleton(new ConsumerBuilder<string, string>(consumerConfig).Build());
+
+builder.Services.AddHostedService<KafkaConsumerService>();
 
 builder.Host.UseSerilog((context, configuration) =>
 {

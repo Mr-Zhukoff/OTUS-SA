@@ -12,9 +12,9 @@ public interface IOrdersRepository
 
     public Task<Order> GetOrderById(int orderId);
 
-    public Task<int> UpdateUser(Order order);
+    public Task<int> UpdateOrder(Order order);
 
-    public Task<int> UpdateUserPartial(Order orderorder);
+    public Task<int> UpdateOrderPartial(Order orderorder);
 
     public Task<bool> ResetDb();
 }

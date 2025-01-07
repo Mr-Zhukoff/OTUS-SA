@@ -67,6 +67,8 @@ helm repo update`
 
 ## ДЗ 5 BFF
 
+Добавлен сервис пользователей (UsersService), который позволяет создавать/редактировать/удалять пользователей а также делать  регистрацию и аутентификацию пользователей.
+
 ### Переходим в папку домашнего задания 
 \OTUS-SA\helm\Homework_BFF
 
@@ -76,3 +78,15 @@ helm repo update`
 ### Тестируем через Newman
 
 `newman run BFF_Homework.postman_collection.json`
+
+## ДЗ 6 RESTful
+
+К сервису пользователей (UsersService), добавлены сервисы Заказа  (OrdersService), Биллинга (BillingService) и Оповещений  (NotificationsService).
+Основной рабочий объект это Заказ (Order).
+Заказ имеет следующие состояния:
+* Новый (New)
+* В обработке (Processing)
+* Оплачен (Paid)
+* Отправлен (Sent)
+* Доставлен (Delivered)
+* Отменен (Cancelled)

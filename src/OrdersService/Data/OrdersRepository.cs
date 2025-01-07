@@ -33,7 +33,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         return (order == null) ? null : order;
     }
 
-    public async Task<int> UpdateUser(Order order)
+    public async Task<int> UpdateOrder(Order order)
     {
         await _context.Orders.Where(e => e.Id == order.Id)
             .ExecuteUpdateAsync(x => x
@@ -49,7 +49,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         return order.Id;
     }
 
-    public async Task<int> UpdateUserPartial(Order orderorder)
+    public async Task<int> UpdateOrderPartial(Order orderorder)
     {
         var userEntity = await _context.Orders.Where(u => u.Id == orderorder.Id).FirstOrDefaultAsync();
 

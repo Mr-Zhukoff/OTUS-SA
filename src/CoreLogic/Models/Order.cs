@@ -26,4 +26,9 @@ public class Order
 
     [Column("amount")]
     public decimal Amount { get; set; }
+
+    [Column("state")]
+    public OrderStatus Status { get; set; }
 }
+
+
