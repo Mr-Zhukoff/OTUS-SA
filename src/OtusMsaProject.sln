@@ -7,6 +7,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "UsersDatabase", "UsersDatab
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A1EEC17-56F3-4996-A4F4-C5ED01B1775F}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
