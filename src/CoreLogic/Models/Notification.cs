@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoreLogic.Models;
 
-[Table("transactions")]
+[Table("notifications")]
 public class Notification
 {
     [Column("id")]
@@ -22,4 +22,8 @@ public class Notification
     [Column("body")]
     [Required]
     public string Body { get; set; }
+
+    [Column("createdon")]
+    [Required]
+    public DateTime CreatedOn { get; set; }
 }

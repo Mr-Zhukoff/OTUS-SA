@@ -41,7 +41,7 @@ public static class BillingEndpoints
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
-                return Results.BadRequest("Modifying another user accountForm is not allowed!");
+                return Results.BadRequest("Modifying another user account is not allowed!");
 
             var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
             return Results.Ok(result);
@@ -53,7 +53,7 @@ public static class BillingEndpoints
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
-                return Results.BadRequest("Modifying another user accountForm is not allowed!");
+                return Results.BadRequest("Modifying another user account is not allowed!");
 
             var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
             return Results.Ok(result);
@@ -65,10 +65,10 @@ public static class BillingEndpoints
             var account = await billingRepository.GetAccountById(id);
 
             if (requestUserId != account.UserId)
-                return Results.BadRequest("Deleting another user accountForm is not allowed!");
+                return Results.BadRequest("Deleting another user account is not allowed!");
 
             if (account.Balance != 0)
-                return Results.BadRequest("Deleting non zero accountForm is not allowed!");
+                return Results.BadRequest("Deleting non zero account is not allowed!");
 
             var result = await billingRepository.DeleteAccount(id);
             return Results.Ok(result);
@@ -80,29 +80,23 @@ public static class BillingEndpoints
             var account = await billingRepository.GetAccountById(accountid);
 
             if (requestUserId != account.UserId)
-                return Results.BadRequest("Access another user account data is not allowed!");
+                return Results.BadRequest("Accessing another user account data is not allowed!");
 
             var transactions = await billingRepository.GetTransactionsByAccountId(accountid);
 
             return Results.Ok(transactions);
         });
 
-        app.MapPost("transactions", async (UpdateTransactionForm transactionForm, IBillingRepository billingRepository, HttpRequest request) =>
+        app.MapPost("transactions", async (Transaction transaction, IBillingRepository billingRepository, HttpRequest request) =>
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
-            var account = await billingRepository.GetAccountById(transactionForm.AccountId);
+            var account = await billingRepository.GetAccountById(transaction.AccountId);
 
             if (requestUserId != account.UserId)
-                return Results.BadRequest("Access another user account data is not allowed!");
+                return Results.BadRequest("Accessing another user account data is not allowed!");
 
-            var transaction = new Transaction()
-            {
-                AccountId = account.Id,
-                UserId = requestUserId,
-                Amount = transactionForm.Amount,
-                Description = transactionForm.Description,
-                CreatedOn = DateTime.UtcNow
-            };
+            transaction.UserId = requestUserId;
+            transaction.CreatedOn = DateTime.UtcNow;
 
             var result = await billingRepository.CreateTransaction(transaction);
             return Results.Ok(result.Id);
@@ -130,8 +124,6 @@ public static class BillingEndpoints
 
             return Results.Ok(transaction);
         });
-
-
 
         app.MapGet("/resetdb", [AllowAnonymous] async (IBillingRepository billingRepository) =>
         {

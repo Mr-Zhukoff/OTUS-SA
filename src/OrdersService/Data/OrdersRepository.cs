@@ -37,6 +37,13 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         return orders.ToList();
     }
 
+    public async Task<List<Order>> GetOrdersByStatus(OrderStatus status)
+    {
+        var orders = await _context.Orders.Where(x => x.Status == status).ToListAsync();
+
+        return orders.ToList();
+    }
+
     public async Task<Order> GetOrderById(int orderId)
     {
         var order = await _context.Orders.Where(u => u.Id == orderId).FirstOrDefaultAsync();
@@ -68,6 +75,14 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         _context.Orders.Update(currentOrder);
         await _context.SaveChangesAsync();
         return order.Id;
+    }
+
+    public async Task<bool> SetOrderStatus(int orderId, OrderStatus orderStatus)
+    {
+        await _context.Orders.Where(o => o.Id == orderId).ExecuteUpdateAsync(
+            t => t.SetProperty(u => u.Status, u => OrderStatus.Processing));
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> ResetDb()

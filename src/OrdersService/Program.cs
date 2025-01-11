@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrdersService;
+using OrdersService.BackgroundTasks;
 using OrdersService.Data;
 using OrdersService.Endpoints;
 using OrdersService.Middlewares;
@@ -56,6 +57,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton(new ProducerBuilder<string, string>(producerConfig).Build());
+
+builder.Services.AddHostedService<OrderProcessingService>();
 
 builder.Host.UseSerilog((context, configuration) =>
 {

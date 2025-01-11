@@ -36,4 +36,8 @@
     <ProjectReference Include="..\CoreLogic\CoreLogic.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BackgroundTasks\" />
+  </ItemGroup>
+
 </Project>

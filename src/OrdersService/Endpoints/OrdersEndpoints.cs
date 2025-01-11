@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using OrdersService.Data;
 using OrdersService.Models;
 using Serilog;
+using System.Net.Http.Headers;
 
 namespace OrdersService.Endpoints;
 
@@ -23,16 +24,47 @@ public static class OrdersEndpoints
             return Results.Ok(orders);
         });
 
-        app.MapGet("/orders/{id:int}", async (int id, IOrdersRepository ordersRepository) =>
+        app.MapGet("/orders/{id:int}", async (int id, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
+            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var order = await ordersRepository.GetOrderById(id);
+
+            if(order.UserId != requestUserId)
+                return Results.BadRequest("Accessing another user order data is not allowed!");
+
             return Results.Ok(order);
         });
 
-        app.MapPost("/orders", async (UpdateOrderForm orderForm, IOrdersRepository ordersRepository) =>
+        app.MapPost("/orders", async (UpdateOrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
-            var result = await ordersRepository.CreateOrder(orderForm.ToOrder());
-            return Results.Ok(result);
+            try
+            {
+                int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
+
+                var newOrder = orderForm.ToOrder();
+                newOrder.UserId = requestUserId;
+                newOrder.Status = OrderStatus.New;
+                Account account;
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Headers.Authorization.FirstOrDefault().Replace("Bearer ", ""));
+                    using (var accountResponse = await httpClient.GetAsync($"{config.GetSection("Services:BillingServiceUrl").Get<string>()}/accounts/{newOrder.AccountId}"))
+                    {
+                        string response = await accountResponse.Content.ReadAsStringAsync();
+                        account = JsonConvert.DeserializeObject<Account>(response);
+                    }
+                }
+
+                if(account == null)
+                    return Results.BadRequest($"Account {newOrder.AccountId} not found!");
+
+                var result = await ordersRepository.CreateOrder(newOrder);
+                return Results.Ok(result);
+            }
+            catch (Exception ex) {
+                Log.Error(ex, "Create order error!");
+                return Results.Problem(ex.Message, null, 500, "Error!");
+            }
         });
 
         app.MapPut("/orders/{id:int}", async (int id, UpdateOrderForm userForm, IOrdersRepository ordersRepository, HttpRequest request) =>

@@ -12,6 +12,10 @@ public interface IOrdersRepository
 
     public Task<List<Order>> GetAllUserOrders(int userId);
 
+    Task<List<Order>> GetOrdersByStatus(OrderStatus status);
+
+    Task<bool> SetOrderStatus(int orderId, OrderStatus orderStatus);
+
     public Task<Order> GetOrderById(int orderId);
 
     public Task<int> UpdateOrder(Order order);
