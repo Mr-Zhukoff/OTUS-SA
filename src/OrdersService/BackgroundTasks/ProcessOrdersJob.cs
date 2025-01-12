@@ -155,7 +155,7 @@ public class ProcessOrdersJob : IJob
                     string response = await transactionResponse.Content.ReadAsStringAsync();
                     if (transactionResponse.IsSuccessStatusCode)
                     {
-                        authHeader = new AuthenticationHeaderValue("Bearer", response);
+                        authHeader = new AuthenticationHeaderValue("Bearer", response.TrimStart('"').TrimEnd('"'));
 
                         var cacheEntryOptions = new MemoryCacheEntryOptions
                         {
