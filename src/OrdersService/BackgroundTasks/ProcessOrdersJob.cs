@@ -12,7 +12,6 @@ namespace OrdersService.BackgroundTasks;
 [DisallowConcurrentExecution]
 public class ProcessOrdersJob : IJob
 {
-    private static int count;
     private readonly string _topic = "order-events";
     private readonly IOrdersRepository _ordersRepository;
     private readonly IConfiguration _config;
@@ -118,9 +117,10 @@ public class ProcessOrdersJob : IJob
                 }
                 else
                 {
-                    // Отправляем сообщение о недостатке баланса
+                    // Отменяем заказ
+                    await _ordersRepository.SetOrderStatus(order.Id, OrderStatus.Cancelled);
                     Log.Information($"Insufficient balance on account {account.Id}");
-
+                    // Отправляем сообщение о недостатке баланса
                     var notification = new Notification()
                     {
                         UserId = account.UserId,
