@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificationsdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notificationsdb
+  template:
+    metadata:
+      labels:
+        app: notificationsdb
+    spec:
+      containers:
+        - name: notificationsdb
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: notificationsdb-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: notificationsdb-volume-claim

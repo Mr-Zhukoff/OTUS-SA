@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ordersservice
+  name: ordersservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordersservice
+  template:
+    metadata:
+      labels:
+        app: ordersservice
+    spec:
+      containers:
+        - image: {{ .Values.ordersservice.image.repository }}
+          name: ordersservice
+          env:
+          - name: PG_CONN_STR
+            value: "Host=ordersdb.default.svc.cluster.local;Port=5432;Database=orders;Username=pguser;Password=P@ssw0rd"
+          - name: SEQ_URL
+            value: "http://seq:5341"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: {{ .Values.ordersservice.restartPolicy }}

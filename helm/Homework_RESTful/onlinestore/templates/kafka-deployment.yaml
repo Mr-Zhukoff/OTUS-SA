@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - image: apache/kafka-native
+          name: kafka
+          env:
+          # Configure listeners for both docker and host communication
+          - name: KAFKA_LISTENERS
+            value: "CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093"
+          - name: KAFKA_ADVERTISED_LISTENERS
+            value: "HOST://localhost:9092,DOCKER://kafka:9093"
+          - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+            value: "CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT"
+          # Settings required for KRaft mode
+          - name: KAFKA_NODE_ID
+            value: 1
+          - name: KAFKA_PROCESS_ROLES
+            value: "broker,controller"
+          - name: KAFKA_CONTROLLER_LISTENER_NAMES
+            value: "CONTROLLER"
+          - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+            value: "1@localhost:9091"
+          # Listener to use for broker-to-broker communication
+          - name: KAFKA_INTER_BROKER_LISTENER_NAME
+            value: "DOCKER"
+          # Required for a single node cluster
+          - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+            value: 1
+          ports:
+            - containerPort: 9092
+              protocol: TCP
+      restartPolicy: Always
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock

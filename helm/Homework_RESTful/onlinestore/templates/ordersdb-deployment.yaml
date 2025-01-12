@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordersdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordersdb
+  template:
+    metadata:
+      labels:
+        app: ordersdb
+    spec:
+      containers:
+        - name: ordersdb
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: ordersdb-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: ordersdb-volume-claim

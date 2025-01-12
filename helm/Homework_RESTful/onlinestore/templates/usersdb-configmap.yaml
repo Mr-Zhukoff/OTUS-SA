@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: usersdb-config
+  labels:
+    app: usersdb
+data:
+  POSTGRES_DB: users_db
+  POSTGRES_USER: pguser
+  POSTGRES_PASSWORD: P@ssw0rd

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: usersdb
+  labels:
+    app: usersdb
+spec:
+  type: NodePort
+  ports:
+  - port: 5432
+  selector:
+    app: usersdb
