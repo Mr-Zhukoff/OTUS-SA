@@ -32,27 +32,24 @@ public class ProcessNotificationsJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        while (!context.CancellationToken.IsCancellationRequested)
+        using (var consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build())
         {
-            using (var consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build())
+            try
             {
-                try
-                {
-                    consumer.Subscribe(_topic);
-                    var cr = consumer.Consume(context.CancellationToken);
-                    var message = cr.Message.Value;
-                    var notification = JsonConvert.DeserializeObject<Notification>(message);
-                    _notificationsRepository.CreateNotification(notification);
-                    Log.Information($"Consumed event from topic {_topic}: key = {cr.Message.Key,-10} value = {cr.Message.Value}");
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error processing Kafka message");
-                }
-                finally
-                {
-                    consumer.Close();
-                }
+                consumer.Subscribe(_topic);
+                var cr = consumer.Consume(context.CancellationToken);
+                var message = cr.Message.Value;
+                var notification = JsonConvert.DeserializeObject<Notification>(message);
+                _notificationsRepository.CreateNotification(notification);
+                Log.Information($"Consumed event from topic {_topic}: key = {cr.Message.Key,-10} value = {cr.Message.Value}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error processing Kafka message");
+            }
+            finally
+            {
+                consumer.Close();
             }
         }
     }
