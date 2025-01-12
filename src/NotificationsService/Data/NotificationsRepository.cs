@@ -83,4 +83,9 @@ public class NotificationsRepository(NotificationsDbContext context) : INotifica
         var result = await _context.Database.EnsureCreatedAsync();
         return result;
     }
+
+    public string GetConnectionInfo()
+    {
+        return _context.Database.GetDbConnection().ConnectionString;
+    }
 }

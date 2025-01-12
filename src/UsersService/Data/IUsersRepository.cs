@@ -12,4 +12,5 @@ public interface IUsersRepository
     Task<int> UpdateUser(User user);
     Task<int> UpdateUserPartial(User user);
     Task<bool> ResetDb();
+    string GetConnectionInfo();
 }

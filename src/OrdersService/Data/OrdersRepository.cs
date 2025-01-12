@@ -80,7 +80,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
     public async Task<bool> SetOrderStatus(int orderId, OrderStatus orderStatus)
     {
         await _context.Orders.Where(o => o.Id == orderId).ExecuteUpdateAsync(
-            t => t.SetProperty(u => u.Status, u => OrderStatus.Processing));
+            t => t.SetProperty(u => u.Status, u => orderStatus));
         await _context.SaveChangesAsync();
         return true;
     }
@@ -90,5 +90,10 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         await _context.Database.EnsureDeletedAsync();
         var result = await _context.Database.EnsureCreatedAsync();
         return result;
+    }
+
+    public string GetConnectionInfo()
+    {
+        return _context.Database.GetDbConnection().ConnectionString;
     }
 }

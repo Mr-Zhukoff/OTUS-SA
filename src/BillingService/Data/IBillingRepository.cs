@@ -15,6 +15,6 @@ public interface IBillingRepository
     Task<Transaction> GetTransactionById(int transactionId);
     Task<List<Transaction>> GetTransactionsByAccountId(int accountId);
     Task<List<Transaction>> GetAllTransactions();
-
     Task<bool> ResetDb();
+    string GetConnectionInfo();
 }

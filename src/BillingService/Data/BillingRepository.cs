@@ -109,4 +109,9 @@ public class BillingRepository(BillingDbContext context) : IBillingRepository
         await _context.SaveChangesAsync();
         return account.Id;
     }
+
+    public string GetConnectionInfo()
+    {
+        return _context.Database.GetDbConnection().ConnectionString;
+    }
 }

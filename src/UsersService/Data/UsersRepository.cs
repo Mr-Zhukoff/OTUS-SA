@@ -89,5 +89,10 @@ public class UsersRepository(UsersDbContext context) : IUsersRepository
         var result = await _context.Database.EnsureCreatedAsync();
         return result;
     }
+
+    public string GetConnectionInfo()
+    {
+        return _context.Database.GetDbConnection().ConnectionString;
+    }
 }
 

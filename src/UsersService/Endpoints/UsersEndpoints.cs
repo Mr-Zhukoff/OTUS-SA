@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using UsersService.Data;
@@ -161,7 +162,42 @@ public static class UsersEndpoints
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
+
+        app.MapGet("/health", [AllowAnonymous] (IUsersRepository userRepository) =>
+        {
+            try
+            {
+                Log.Information($"Health status requested {Environment.MachineName}");
+
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+
+                return Results.Ok(new
+                {
+                    status = "OK",
+                    app = Assembly.GetExecutingAssembly().FullName,
+                    version = fvi.FileVersion,
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    timestamp = DateTime.Now,
+                    pgconnstr = userRepository.GetConnectionInfo()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Ok(new
+                {
+                    status = "BAD",
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    message = ex.Message
+                });
+            }
+        });
     }
+
 
     private static JwtSecurityToken GetSecurityToken(IConfiguration config, User user)
     {
