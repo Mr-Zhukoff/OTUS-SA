@@ -10,7 +10,6 @@ using NotificationsService;
 using NotificationsService.Data;
 using NotificationsService.Endpoints;
 using NotificationsService.Middlewares;
-using NotificationsService.Workers;
 using Serilog;
 using System.Reflection;
 using System.Text;
@@ -58,9 +57,7 @@ builder.Services.AddAuthorization(options =>
       .Build();
 });
 
-builder.Services.AddSingleton(new ConsumerBuilder<string, string>(consumerConfig).Build());
-
-builder.Services.AddHostedService<KafkaConsumerService>();
+//builder.Services.AddSingleton(new ConsumerBuilder<string, string>(consumerConfig).Build());
 
 builder.Host.UseSerilog((context, configuration) =>
 {
