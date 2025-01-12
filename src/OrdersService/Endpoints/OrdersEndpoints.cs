@@ -29,7 +29,7 @@ public static class OrdersEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var order = await ordersRepository.GetOrderById(id);
 
-            if(order.UserId != requestUserId)
+            if(requestUserId != 0 && order.UserId != requestUserId)
                 return Results.BadRequest("Accessing another user order data is not allowed!");
 
             return Results.Ok(order);
@@ -71,7 +71,7 @@ public static class OrdersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Modifying another orderForm is not allowed!");
 
             var result = await ordersRepository.UpdateOrder(userForm.ToOrder(id));
@@ -81,7 +81,7 @@ public static class OrdersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Modifying another orderForm is not allowed!");
 
             var result = await ordersRepository.UpdateOrder(orderForm.ToOrder(id));
@@ -91,7 +91,7 @@ public static class OrdersEndpoints
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
-            if (requestUserId != id)
+            if (requestUserId != 0 && requestUserId != id)
                 return Results.BadRequest("Deleting another orderForm is not allowed!");
 
             var result = await ordersRepository.DeleteOrder(id);
@@ -113,23 +113,23 @@ public static class OrdersEndpoints
             }
         });
 
-        app.MapPost("/sendnotification", [AllowAnonymous] async (Order order, IOrdersRepository ordersRepository, IProducer<string, string> producer) =>
-        {
-            try
-            {
-                Log.Information($"Sending notification");
-                var kafkaMessage = new Message<string, string>
-                {
-                    Value = JsonConvert.SerializeObject(order)
-                };
-                await producer.ProduceAsync(_topic, kafkaMessage);
-                return Results.Ok($"Order placed successfully. topic {_topic}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, ex.Message);
-                return Results.Problem(ex.Message, null, 500, "Sendnotification error!");
-            }
-        });
+        //app.MapPost("/sendnotification", [AllowAnonymous] async (Order order, IOrdersRepository ordersRepository, IProducer<string, string> producer) =>
+        //{
+        //    try
+        //    {
+        //        Log.Information($"Sending notification");
+        //        var kafkaMessage = new Message<string, string>
+        //        {
+        //            Value = JsonConvert.SerializeObject(order)
+        //        };
+        //        await producer.ProduceAsync(_topic, kafkaMessage);
+        //        return Results.Ok($"Order placed successfully. topic {_topic}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, ex.Message);
+        //        return Results.Problem(ex.Message, null, 500, "Sendnotification error!");
+        //    }
+        //});
     }
 }

@@ -57,6 +57,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton(new ProducerBuilder<string, string>(producerConfig).Build());
 
+builder.Services.AddMemoryCache();
+
 builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.ReadFrom.Configuration(context.Configuration)

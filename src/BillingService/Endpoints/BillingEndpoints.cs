@@ -40,7 +40,7 @@ public static class BillingEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Modifying another user account is not allowed!");
 
             var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
@@ -52,7 +52,7 @@ public static class BillingEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Modifying another user account is not allowed!");
 
             var result = await billingRepository.UpdateAccount(accountForm.ToAccount(id));
@@ -64,7 +64,7 @@ public static class BillingEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(id);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Deleting another user account is not allowed!");
 
             if (account.Balance != 0)
@@ -79,7 +79,7 @@ public static class BillingEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(accountid);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Accessing another user account data is not allowed!");
 
             var transactions = await billingRepository.GetTransactionsByAccountId(accountid);
@@ -92,7 +92,7 @@ public static class BillingEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var account = await billingRepository.GetAccountById(transaction.AccountId);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Accessing another user account data is not allowed!");
 
             transaction.UserId = requestUserId;
@@ -119,7 +119,7 @@ public static class BillingEndpoints
 
             var account = await billingRepository.GetAccountById(transaction.AccountId);
 
-            if (requestUserId != account.UserId)
+            if (requestUserId != 0 && requestUserId != account.UserId)
                 return Results.BadRequest("Access another user account data is not allowed!");
 
             return Results.Ok(transaction);
