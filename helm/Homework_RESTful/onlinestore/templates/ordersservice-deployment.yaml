@@ -21,7 +21,11 @@ spec:
           - name: PG_CONN_STR
             value: "Host=ordersdb.default.svc.cluster.local;Port=5432;Database=orders;Username=pguser;Password=P@ssw0rd"
           - name: SEQ_URL
-            value: "http://seq:5341"
+            value: "http://seq.default.svc.cluster.local:5341"
+          - name: BILLINGSVC_URL
+            value: "http://billingservice.default.svc.cluster.local:8080"
+          - name: USERSSVC_URL
+            value: "http://usersservice.default.svc.cluster.local:8080"
           ports:
             - containerPort: 8080
               protocol: TCP

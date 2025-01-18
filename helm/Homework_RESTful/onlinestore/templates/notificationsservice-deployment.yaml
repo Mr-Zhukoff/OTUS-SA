@@ -21,7 +21,7 @@ spec:
           - name: PG_CONN_STR
             value: "Host=notificationsdb.default.svc.cluster.local;Port=5432;Database=notifications;Username=pguser;Password=P@ssw0rd"
           - name: SEQ_URL
-            value: "http://seq:5341"
+            value: "http://seq.default.svc.cluster.local:5341"
           ports:
             - containerPort: 8080
               protocol: TCP
