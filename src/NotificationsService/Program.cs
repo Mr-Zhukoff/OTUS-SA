@@ -124,41 +124,4 @@ app.MapHealthChecks("hc", new HealthCheckOptions
 
 app.AddNotificationsEndpoints(app.Services.GetRequiredService<IConfiguration>());
 
-app.MapGet("/health", [AllowAnonymous] () =>
-{
-    try
-    {
-        Log.Information($"Health status requested {Environment.MachineName}");
-
-        Assembly assembly = Assembly.GetExecutingAssembly();
-        System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-
-        return Results.Ok(new
-        {
-            status = "OK",
-            app = Assembly.GetExecutingAssembly().FullName,
-            version = fvi.FileVersion,
-            machinename = Environment.MachineName,
-            osversion = Environment.OSVersion.VersionString,
-            processid = Environment.ProcessId,
-            timestamp = DateTime.Now,
-            pgconnstr = pgConnStr,
-            sequrl = seqUrl
-        });
-    }
-    catch (Exception ex)
-    {
-        return Results.Ok(new
-        {
-            status = "BAD",
-            machinename = Environment.MachineName,
-            osversion = Environment.OSVersion.VersionString,
-            processid = Environment.ProcessId,
-            message = ex.Message
-        });
-    }
-})
-.WithName("GetHealth")
-.WithOpenApi();
-
 app.Run();

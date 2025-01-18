@@ -5,6 +5,7 @@ using NotificationsService.Data;
 using NotificationsService.Models;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 
 namespace NotificationsService.Endpoints;
 
@@ -81,6 +82,40 @@ public static class NotificationsEndpoints
             {
                 Log.Error(ex, ex.Message);
                 return Results.Problem(ex.Message, null, 500, "Register error!");
+            }
+        });
+
+        app.MapGet("/health", [AllowAnonymous] (INotificationsRepository notificationsRepository) =>
+        {
+            try
+            {
+                Log.Information($"Health status requested {Environment.MachineName}");
+
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+
+                return Results.Ok(new
+                {
+                    status = "OK",
+                    app = Assembly.GetExecutingAssembly().FullName,
+                    version = fvi.FileVersion,
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    timestamp = DateTime.Now,
+                    pgconnstr = notificationsRepository.GetConnectionInfo()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Ok(new
+                {
+                    status = "BAD",
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    message = ex.Message
+                });
             }
         });
     }

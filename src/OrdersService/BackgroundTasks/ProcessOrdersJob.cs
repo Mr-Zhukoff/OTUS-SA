@@ -18,7 +18,9 @@ public class ProcessOrdersJob : IJob
     private readonly IProducer<string, string> _producer;
     private readonly AuthenticationHeaderValue _authHeader;
     private readonly IMemoryCache _cache;
-    private readonly string authHeaderKey = "authheader";
+    private readonly string _authHeaderKey = "authheader";
+    private readonly string _billingServiceUrl;
+    private readonly string _usersServiceUrl;
 
     public ProcessOrdersJob(IConfiguration configuration, IMemoryCache cache, IOrdersRepository ordersRepository, IProducer<string, string> producer)
     {
@@ -28,6 +30,13 @@ public class ProcessOrdersJob : IJob
         _cache = cache;
         _topic = _config["Kafka:Topic"];
         _authHeader = GetAuthHeader().Result; // Добавить кеширование
+        _billingServiceUrl = Environment.GetEnvironmentVariable("BILLINGSVC_URL");
+        if (String.IsNullOrEmpty(_billingServiceUrl))
+            _billingServiceUrl = _config.GetSection("Services:BillingServiceUrl").Get<string>();
+
+        _usersServiceUrl = Environment.GetEnvironmentVariable("USERSSVC_URL");
+        if (String.IsNullOrEmpty(_usersServiceUrl))
+            _usersServiceUrl = _config.GetSection("Services:UsersServiceUrl").Get<string>();
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -46,7 +55,7 @@ public class ProcessOrdersJob : IJob
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = _authHeader;
-                    using (var accountResponse = await httpClient.GetAsync($"{_config.GetSection("Services:BillingServiceUrl").Get<string>()}/accounts/{order.AccountId}"))
+                    using (var accountResponse = await httpClient.GetAsync($"{_billingServiceUrl}/accounts/{order.AccountId}"))
                     {
                         string response = await accountResponse.Content.ReadAsStringAsync();
                         if (accountResponse.IsSuccessStatusCode)
@@ -83,7 +92,7 @@ public class ProcessOrdersJob : IJob
                         };
                         JsonContent content = JsonContent.Create(transaction);
                         httpClient.DefaultRequestHeaders.Authorization = _authHeader;
-                        using (var transactionResponse = await httpClient.PostAsync($"{_config.GetSection("Services:BillingServiceUrl").Get<string>()}/transactions", content))
+                        using (var transactionResponse = await httpClient.PostAsync($"{_billingServiceUrl}/transactions", content))
                         {
                             string response = await transactionResponse.Content.ReadAsStringAsync();
                             if (transactionResponse.IsSuccessStatusCode)
@@ -144,13 +153,13 @@ public class ProcessOrdersJob : IJob
     {
         AuthenticationHeaderValue authHeader;
 
-        if (!_cache.TryGetValue(authHeaderKey, out authHeader))
+        if (!_cache.TryGetValue(_authHeaderKey, out authHeader))
         {
             using (var httpClient = new HttpClient())
             {
                 var loginForm = new LoginForm("admin@zhukoff.pro", "P@ssw0rd");
                 JsonContent content = JsonContent.Create(loginForm);
-                using (var transactionResponse = await httpClient.PostAsync($"{_config.GetSection("Services:UsersServiceUrl").Get<string>()}/login", content))
+                using (var transactionResponse = await httpClient.PostAsync($"{_usersServiceUrl}/login", content))
                 {
                     string response = await transactionResponse.Content.ReadAsStringAsync();
                     if (transactionResponse.IsSuccessStatusCode)
@@ -163,7 +172,7 @@ public class ProcessOrdersJob : IJob
                             SlidingExpiration = TimeSpan.FromMinutes(2)
                         };
 
-                        _cache.Set(authHeaderKey, authHeader, cacheEntryOptions);
+                        _cache.Set(_authHeaderKey, authHeader, cacheEntryOptions);
 
                         return authHeader;
                     }

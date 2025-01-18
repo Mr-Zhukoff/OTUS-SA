@@ -7,6 +7,7 @@ using OrdersService.Data;
 using OrdersService.Models;
 using Serilog;
 using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace OrdersService.Endpoints;
 
@@ -48,7 +49,7 @@ public static class OrdersEndpoints
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Headers.Authorization.FirstOrDefault().Replace("Bearer ", ""));
-                    using (var accountResponse = await httpClient.GetAsync($"{config.GetSection("Services:BillingServiceUrl").Get<string>()}/accounts/{newOrder.AccountId}"))
+                    using (var accountResponse = await httpClient.GetAsync($"{Environment.GetEnvironmentVariable("BILLINGSVC_URL")}/accounts/{newOrder.AccountId}"))
                     {
                         string response = await accountResponse.Content.ReadAsStringAsync();
                         account = JsonConvert.DeserializeObject<Account>(response);
@@ -113,23 +114,38 @@ public static class OrdersEndpoints
             }
         });
 
-        //app.MapPost("/sendnotification", [AllowAnonymous] async (Order order, IOrdersRepository ordersRepository, IProducer<string, string> producer) =>
-        //{
-        //    try
-        //    {
-        //        Log.Information($"Sending notification");
-        //        var kafkaMessage = new Message<string, string>
-        //        {
-        //            Value = JsonConvert.SerializeObject(order)
-        //        };
-        //        await producer.ProduceAsync(_topic, kafkaMessage);
-        //        return Results.Ok($"Order placed successfully. topic {_topic}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Log.Error(ex, ex.Message);
-        //        return Results.Problem(ex.Message, null, 500, "Sendnotification error!");
-        //    }
-        //});
+        app.MapGet("/health", [AllowAnonymous] (IOrdersRepository ordersRepository) =>
+        {
+            try
+            {
+                Log.Information($"Health status requested {Environment.MachineName}");
+
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+
+                return Results.Ok(new
+                {
+                    status = "OK",
+                    app = Assembly.GetExecutingAssembly().FullName,
+                    version = fvi.FileVersion,
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    timestamp = DateTime.Now,
+                    pgconnstr = ordersRepository.GetConnectionInfo()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Ok(new
+                {
+                    status = "BAD",
+                    machinename = Environment.MachineName,
+                    osversion = Environment.OSVersion.VersionString,
+                    processid = Environment.ProcessId,
+                    message = ex.Message
+                });
+            }
+        });
     }
 }
