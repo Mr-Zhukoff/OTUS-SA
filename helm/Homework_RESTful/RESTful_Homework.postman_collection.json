@@ -4,7 +4,7 @@
 		"name": "RESTful_Homework",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2482108",
-		"_collection_link": "https://zhukoff-5467.postman.co/workspace/c27f666f-b9d2-4d5b-9ced-c380e10f33bd/collection/2482108-86468db9-6a6e-4a08-a543-7eda376a3f29?action=share&source=collection_link&creator=2482108"
+		"_collection_link": "https://zhukoff-5467.postman.co/workspace/OTUS~c27f666f-b9d2-4d5b-9ced-c380e10f33bd/collection/2482108-86468db9-6a6e-4a08-a543-7eda376a3f29?action=share&source=collection_link&creator=2482108"
 	},
 	"item": [
 		{
@@ -31,14 +31,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://arch.homework/api/users/health",
-					"protocol": "http",
+					"raw": "{{base_url}}/users/health",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"users",
 						"health"
 					]
@@ -70,14 +67,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://arch.homework/api/billing/health",
-					"protocol": "http",
+					"raw": "{{base_url}}/billing/health",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"billing",
 						"health"
 					]
@@ -109,14 +103,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://arch.homework/api/notifications/health",
-					"protocol": "http",
+					"raw": "{{base_url}}/notifications/health",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"notifications",
 						"health"
 					]
@@ -148,14 +139,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://arch.homework/api/orders/health",
-					"protocol": "http",
+					"raw": "{{base_url}}/orders/health",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"orders",
 						"health"
 					]
@@ -214,14 +202,11 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/api/users/register",
-					"protocol": "http",
+					"raw": "{{base_url}}/users/register",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"users",
 						"register"
 					]
@@ -270,14 +255,11 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/api/users/login",
-					"protocol": "http",
+					"raw": "{{base_url}}/users/login",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"users",
 						"login"
 					]
@@ -327,7 +309,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"description\": \"Первое пополнение\",\r\n  \"balance\": 0\r\n}",
+					"raw": "{\r\n  \"description\": \"Основной счет\",\r\n  \"balance\": 10000.00\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -335,80 +317,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/api/billing/accounts",
-					"protocol": "http",
+					"raw": "{{base_url}}/billing/accounts",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"billing",
 						"accounts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Top up account",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"  pm.response.to.have.status(200);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{User1Token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"accountId\": {{User1AccountId}},\r\n  \"description\": \"Первое пополнение\",\r\n  \"amount\": 5000.00\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://arch.homework/api/billing/transactions",
-					"protocol": "http",
-					"host": [
-						"arch",
-						"homework"
-					],
-					"path": [
-						"api",
-						"billing",
-						"transactions"
 					]
 				}
 			},
@@ -463,14 +378,11 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/api/orders/orders",
-					"protocol": "http",
+					"raw": "{{base_url}}/orders/orders",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"orders",
 						"orders"
 					]
@@ -508,14 +420,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://arch.homework/api/billing/accounts/{{User1AccountId}}",
-					"protocol": "http",
+					"raw": "{{base_url}}/billing/accounts/{{User1AccountId}}",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"billing",
 						"accounts",
 						"{{User1AccountId}}"
@@ -573,14 +482,11 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/api/orders/orders",
-					"protocol": "http",
+					"raw": "{{base_url}}/orders/orders",
 					"host": [
-						"arch",
-						"homework"
+						"{{base_url}}"
 					],
 					"path": [
-						"api",
 						"orders",
 						"orders"
 					]
