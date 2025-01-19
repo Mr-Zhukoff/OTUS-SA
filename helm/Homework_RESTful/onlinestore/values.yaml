@@ -1,20 +1,15 @@
 userservice:
   replicaCount: 1
-
   strategy:
     type: Recreate
-
   restartPolicy: Always
-
   image:
     repository: zhukoffg/usersservice:1.4
     pullPolicy: IfNotPresent
-
   service:
     type: ClusterIP
     port: 80
     targetPort: 8080
-
   livenessProbe:
     httpGet:
       path: /
@@ -26,21 +21,16 @@ userservice:
 
 billingservice:
   replicaCount: 1
-
   strategy:
     type: Recreate
-
   restartPolicy: Always
-
   image:
     repository: zhukoffg/billingservice:1.0
     pullPolicy: IfNotPresent
-
   service:
     type: ClusterIP
     port: 80
     targetPort: 8080
-
   livenessProbe:
     httpGet:
       path: /
@@ -52,21 +42,16 @@ billingservice:
 
 ordersservice:
   replicaCount: 1
-
   strategy:
     type: Recreate
-
   restartPolicy: Always
-
   image:
     repository: zhukoffg/ordersservice:1.4
     pullPolicy: IfNotPresent
-
   service:
     type: ClusterIP
     port: 80
     targetPort: 8080
-
   livenessProbe:
     httpGet:
       path: /
@@ -78,21 +63,16 @@ ordersservice:
  
 notificationsservice:
   replicaCount: 1
-
   strategy:
     type: Recreate
-
   restartPolicy: Always
-
   image:
-    repository: zhukoffg/notificationsservice:1.1
+    repository: zhukoffg/notificationsservice:1.2
     pullPolicy: IfNotPresent
-
   service:
     type: ClusterIP
     port: 80
     targetPort: 8080
-
   livenessProbe:
     httpGet:
       path: /
@@ -101,6 +81,19 @@ notificationsservice:
     httpGet:
       path: /
       port: http
+
+backgroundworkerservice:
+  replicaCount: 1
+  strategy:
+    type: Recreate
+  restartPolicy: Always
+  image:
+    repository: zhukoffg/backgroundworkerservice:1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
 
 ingress:
   enabled: true

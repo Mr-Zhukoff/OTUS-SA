@@ -1,13 +1,14 @@
-﻿using Confluent.Kafka;
+﻿using BackgroundWorkerService.Data;
+using Confluent.Kafka;
 using CoreLogic.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
-using OrdersService.Data;
 using Quartz;
 using Serilog;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
-namespace OrdersService.BackgroundTasks;
+namespace BackgroundWorkerService;
 
 [DisallowConcurrentExecution]
 public class ProcessOrdersJob : IJob
@@ -42,6 +43,7 @@ public class ProcessOrdersJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
+        Log.Information("ProcessOrdersJob started");
         try
         {
             var newOrders = await _ordersRepository.GetOrdersByStatus(OrderStatus.New);
@@ -148,6 +150,7 @@ public class ProcessOrdersJob : IJob
         {
             Log.Error(ex, "Processing new orders error!");
         }
+        Log.Information("ProcessOrdersJob ended");
     }
 
     private async Task<AuthenticationHeaderValue> GetAuthHeader()

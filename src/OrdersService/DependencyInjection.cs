@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using OrdersService.BackgroundTasks;
 using OrdersService.Behaviors;
-using Quartz;
 
 namespace OrdersService;
 
@@ -17,21 +15,6 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(assembly);
-
-        services.AddQuartz(options => 
-        {
-            var jobKey = JobKey.Create(nameof(ProcessOrdersJob));
-            options.AddJob<ProcessOrdersJob>(jobKey)
-                .AddTrigger(trigger => trigger.ForJob(jobKey)
-                .WithSimpleSchedule(schedule => schedule.WithIntervalInSeconds(30)
-                .WithMisfireHandlingInstructionNextWithRemainingCount()
-                .RepeatForever()));
-        });
-
-        services.AddQuartzHostedService(options => 
-        { 
-            options.WaitForJobsToComplete = true;
-        });
 
         return services;
     }

@@ -38,6 +38,19 @@ services:
     ports:
         - "8083:8080"
 
+  backgroundworkerservice:
+    image: ${DOCKER_REGISTRY-}backgroundworkerservice
+    build:
+      context: .
+      dockerfile: BackgroundWorkerService/Dockerfile
+    environment:
+      - ORDERS_CONN_STR=Host=ordersdb;Port=5432;Database=orders;Username=pguser;Password=12345678
+      - NOTIFICATIONS_CONN_STR=Host=notificationsdb;Port=5432;Database=notifications;Username=pguser;Password=12345678
+      - KAFKA_URL=kafka:9093
+      - BILLINGSVC_URL=http://billingservice:8080
+      - USERSSVC_URL=http://usersservice:8080
+      - SEQ_URL=http://seq:5341
+
   usersdb:
     image: postgres:17.0
     container_name: usersdb
@@ -163,3 +176,4 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+

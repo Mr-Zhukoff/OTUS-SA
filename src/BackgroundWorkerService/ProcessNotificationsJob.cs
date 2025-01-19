@@ -1,12 +1,11 @@
-﻿using Confluent.Kafka;
+﻿using BackgroundWorkerService.Data;
+using Confluent.Kafka;
 using CoreLogic.Models;
 using Newtonsoft.Json;
-using NotificationsService.Data;
 using Quartz;
 using Serilog;
 
-namespace NotificationsService.BackgroundTasks;
-
+namespace BackgroundWorkerService;
 
 [DisallowConcurrentExecution]
 public class ProcessNotificationsJob : IJob
@@ -32,6 +31,7 @@ public class ProcessNotificationsJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
+        Log.Information("ProcessNotificationsJob started");
         using (var consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build())
         {
             try
@@ -52,5 +52,6 @@ public class ProcessNotificationsJob : IJob
                 consumer.Close();
             }
         }
+        Log.Information("ProcessNotificationsJob ended");
     }
 }
