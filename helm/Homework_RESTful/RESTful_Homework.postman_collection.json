@@ -399,6 +399,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Balance is less than 10000.00\", function () {\r",
+							"    let result = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"Order1Balance\", result.balance);\r",
+							"    pm.expect(result.balance).to.lessThan(10000.00);\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -428,6 +433,56 @@
 						"billing",
 						"accounts",
 						"{{User1AccountId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check order 1 notifications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let jsonData = pm.response.json();\r",
+							"pm.test('Notifications contais message \"Успешная оплата заказа\"', () => {\r",
+							"        pm.expect(jsonData[0].title).to.include(\"Успешная оплата заказа\")\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{User1Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/api/notifications/notifications",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"api",
+						"notifications",
+						"notifications"
 					]
 				}
 			},
@@ -495,7 +550,7 @@
 			"response": []
 		},
 		{
-			"name": "Check account balance again Copy",
+			"name": "Check account balance again",
 			"event": [
 				{
 					"listen": "test",
@@ -503,6 +558,10 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Balance hasn't changed\", function () {\r",
+							"    let result = pm.response.json();\r",
+							"    pm.expect(result.balance).to.equal(pm.collectionVariables.get(\"Order1Balance\"));\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -541,15 +600,20 @@
 			"response": []
 		},
 		{
-			"name": "Check notifications",
+			"name": "Check order 2 notifications",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
-							"  pm.response.to.have.status(200);\r",
-							"});"
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let jsonData = pm.response.json();\r",
+							"pm.test('Notifications contais message \"Недостаточно средств для оплаты заказа\"', () => {\r",
+							"        pm.expect(jsonData[1].title).to.include(\"Недостаточно средств для оплаты заказа\")\r",
+							"    });\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -594,7 +658,12 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"  pm.response.to.have.status(200);\r",
-							"});"
+							"});\r",
+							"let jsonData = pm.response.json();\r",
+							"console.log(jsonData.length);\r",
+							"pm.test('There are two orders', () => {\r",
+							"        pm.expect(jsonData.length).to.equal(2)\r",
+							"    });"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -663,7 +732,7 @@
 		},
 		{
 			"key": "base_url",
-			"value": "arch.homework"
+			"value": "http://arch.homework/api/"
 		},
 		{
 			"key": "UserToken",
@@ -723,6 +792,10 @@
 		},
 		{
 			"key": "User1AccountId",
+			"value": ""
+		},
+		{
+			"key": "Order1Balance",
 			"value": ""
 		}
 	]
