@@ -26,12 +26,6 @@ string pgConnStr = Environment.GetEnvironmentVariable("PG_CONN_STR");
 if (String.IsNullOrEmpty(pgConnStr))
     pgConnStr = builder.Configuration.GetConnectionString("PgDb");
 
-var producerConfig = new ProducerConfig
-{
-    BootstrapServers = builder.Configuration.GetSection("Kafka:BootstrapServers").Get<string>(),
-    ClientId = builder.Configuration.GetSection("Kafka:ClientId").Get<string>()
-};
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  .AddJwtBearer(options =>
  {
@@ -54,8 +48,6 @@ builder.Services.AddAuthorization(options =>
       .RequireAuthenticatedUser()
       .Build();
 });
-
-builder.Services.AddSingleton(new ProducerBuilder<string, string>(producerConfig).Build());
 
 builder.Services.AddMemoryCache();
 

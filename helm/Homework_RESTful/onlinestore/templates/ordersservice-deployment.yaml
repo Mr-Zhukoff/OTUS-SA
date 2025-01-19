@@ -26,6 +26,8 @@ spec:
             value: "http://billingservice.default.svc.cluster.local"
           - name: USERSSVC_URL
             value: "http://usersservice.default.svc.cluster.local"
+          - name: NOTIFICATIONSSVC_URL
+            value: "http://notificationsservice.default.svc.cluster.local"
           ports:
             - containerPort: 8080
               protocol: TCP

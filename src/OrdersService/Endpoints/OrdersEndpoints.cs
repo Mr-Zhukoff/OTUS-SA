@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using CoreLogic.Models;
+﻿using CoreLogic.Models;
 using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
@@ -41,14 +40,17 @@ public static class OrdersEndpoints
             try
             {
                 int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
+                var _authHeader = new AuthenticationHeaderValue("Bearer", request.Headers.Authorization.FirstOrDefault().Replace("Bearer ", ""));
 
                 var newOrder = orderForm.ToOrder();
                 newOrder.UserId = requestUserId;
                 newOrder.Status = OrderStatus.New;
+
                 Account account;
+
                 using (var httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Headers.Authorization.FirstOrDefault().Replace("Bearer ", ""));
+                    httpClient.DefaultRequestHeaders.Authorization = _authHeader;
                     using (var accountResponse = await httpClient.GetAsync($"{Environment.GetEnvironmentVariable("BILLINGSVC_URL")}/accounts/{newOrder.AccountId}"))
                     {
                         string response = await accountResponse.Content.ReadAsStringAsync();
@@ -59,8 +61,65 @@ public static class OrdersEndpoints
                 if(account == null)
                     return Results.BadRequest($"Account {newOrder.AccountId} not found!");
 
-                var result = await ordersRepository.CreateOrder(newOrder);
-                return Results.Ok(result);
+                var orderResult = await ordersRepository.CreateOrder(newOrder);
+
+                if (account.Balance >= newOrder.Amount)
+                {
+                    int transactionId = 0;
+                    // Создаем транзакцию
+                    using (var httpClient = new HttpClient())
+                    {
+                        var transaction = new Transaction()
+                        {
+                            UserId = newOrder.UserId,
+                            AccountId = newOrder.AccountId,
+                            Amount = newOrder.Amount * -1,
+                            Description = newOrder.Description,
+                            CreatedOn = DateTime.Now
+                        };
+                        JsonContent content = JsonContent.Create(transaction);
+                        httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+                        using (var transactionResponse = await httpClient.PostAsync($"{Environment.GetEnvironmentVariable("BILLINGSVC_URL")}/transactions", content))
+                        {
+                            string response = await transactionResponse.Content.ReadAsStringAsync();
+                            if (transactionResponse.IsSuccessStatusCode)
+                                int.TryParse(response, out transactionId);
+                            else
+                                Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                        }
+                    }
+
+                    await ordersRepository.SetOrderStatus(newOrder.Id, OrderStatus.Paid);
+                    Log.Information($"Order {newOrder.Id} is paid with transaction {transactionId}");
+
+                    // Отправляем сообщение об успешной обработке товара 
+                    Log.Information($"Sending order {newOrder.Id} success payment notification");
+                    var notification = new Notification()
+                    {
+                        UserId = account.UserId,
+                        Title = $"Успешная оплата заказа {newOrder.Title}",
+                        Body = $"Здраствуйте! Ваш заказ {newOrder.Title} успешно оплачен.",
+                        CreatedOn = DateTime.UtcNow
+                    };
+                    await SendNotification(_authHeader, notification);
+                }
+                else
+                {
+                    // Отменяем заказ
+                    await ordersRepository.SetOrderStatus(newOrder.Id, OrderStatus.Cancelled);
+                    Log.Information($"Insufficient balance on account {account.Id}");
+                    // Отправляем сообщение о недостатке баланса
+                    var notification = new Notification()
+                    {
+                        UserId = account.UserId,
+                        Title = $"Недостаточно средств для оплаты заказа {newOrder.Title}",
+                        Body = $"Здраствуйте! К сожалению, на вашем счете {account.Number} недостаточно недостаточно средств для оплаты заказа {newOrder.Title}.",
+                        CreatedOn = DateTime.UtcNow
+                    };
+                    await SendNotification(_authHeader, notification);
+                }
+
+                return Results.Ok(orderResult);
             }
             catch (Exception ex) {
                 Log.Error(ex, "Create order error!");
@@ -147,5 +206,24 @@ public static class OrdersEndpoints
                 });
             }
         });
+    }
+
+    private static async Task<int> SendNotification(AuthenticationHeaderValue _authHeader, Notification notification)
+    {
+        int notificationId = 0;
+        using (var httpClient = new HttpClient())
+        {
+            JsonContent content = JsonContent.Create(notification);
+            httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+            using (var transactionResponse = await httpClient.PostAsync($"{Environment.GetEnvironmentVariable("NOTIFICATIONSSVC_URL")}/notifications", content))
+            {
+                string response = await transactionResponse.Content.ReadAsStringAsync();
+                if (transactionResponse.IsSuccessStatusCode)
+                    int.TryParse(response, out notificationId);
+                else
+                    Log.Error($"Create Notification request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+            }
+        }
+        return notificationId;
     }
 }

@@ -33,7 +33,7 @@ billingservice:
   restartPolicy: Always
 
   image:
-    repository: zhukoffg/billingservice:1.0
+    repository: zhukoffg/billingservice:1.1
     pullPolicy: IfNotPresent
 
   service:
@@ -59,7 +59,7 @@ ordersservice:
   restartPolicy: Always
 
   image:
-    repository: zhukoffg/ordersservice:1.4
+    repository: zhukoffg/ordersservice:1.5
     pullPolicy: IfNotPresent
 
   service:
@@ -85,7 +85,7 @@ notificationsservice:
   restartPolicy: Always
 
   image:
-    repository: zhukoffg/notificationsservice:1.1
+    repository: zhukoffg/notificationsservice:1.3
     pullPolicy: IfNotPresent
 
   service:
