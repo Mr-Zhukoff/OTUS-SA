@@ -59,7 +59,7 @@ ordersservice:
   restartPolicy: Always
 
   image:
-    repository: zhukoffg/ordersservice:1.3
+    repository: zhukoffg/ordersservice:1.4
     pullPolicy: IfNotPresent
 
   service:

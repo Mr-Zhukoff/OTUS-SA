@@ -29,7 +29,6 @@ public class ProcessOrdersJob : IJob
         _producer = producer;
         _cache = cache;
         _topic = _config["Kafka:Topic"];
-        _authHeader = GetAuthHeader().Result; // Добавить кеширование
         _billingServiceUrl = Environment.GetEnvironmentVariable("BILLINGSVC_URL");
         if (String.IsNullOrEmpty(_billingServiceUrl))
             _billingServiceUrl = _config.GetSection("Services:BillingServiceUrl").Get<string>();
@@ -37,6 +36,8 @@ public class ProcessOrdersJob : IJob
         _usersServiceUrl = Environment.GetEnvironmentVariable("USERSSVC_URL");
         if (String.IsNullOrEmpty(_usersServiceUrl))
             _usersServiceUrl = _config.GetSection("Services:UsersServiceUrl").Get<string>();
+
+        _authHeader = GetAuthHeader().Result; // Добавить кеширование
     }
 
     public async Task Execute(IJobExecutionContext context)
