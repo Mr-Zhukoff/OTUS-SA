@@ -38,11 +38,13 @@ services:
     ports:
         - "8083:8080"
 
-  backgroundworkerservice:
-    image: ${DOCKER_REGISTRY-}backgroundworkerservice
+  hangfireservice:
+    image: ${DOCKER_REGISTRY-}hangfireservice
     build:
       context: .
-      dockerfile: BackgroundWorkerService/Dockerfile
+      dockerfile: HangfireBackgroundJob/Dockerfile
+    ports:
+    - "8089:8080"
     environment:
       - ORDERS_CONN_STR=Host=ordersdb;Port=5432;Database=orders;Username=pguser;Password=12345678
       - NOTIFICATIONS_CONN_STR=Host=notificationsdb;Port=5432;Database=notifications;Username=pguser;Password=12345678
