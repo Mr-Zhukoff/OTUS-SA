@@ -1,20 +1,30 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
 using HangfireService;
+using HangfireService.Data;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL");
-if (String.IsNullOrEmpty(seqUrl))
-    seqUrl = "http://seq:5341";
+string ordersConnStr = Environment.GetEnvironmentVariable("ORDERS_CONN_STR");
+string notificationsConnStr = Environment.GetEnvironmentVariable("ORDERS_CONN_STR");
+string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://seq:5341";
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
 builder.Services.AddHangfireServer();
+
+builder.Services.AddMemoryCache();
+
+builder.Services.AddDbContext<OrdersDbContext>(options => options.UseNpgsql(ordersConnStr));
+builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
+
+builder.Services.AddDbContext<NotificationsDbContext>(options => options.UseNpgsql(notificationsConnStr));
+builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
 
 builder.Host.UseSerilog((context, configuration) =>
 {
@@ -34,7 +44,9 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions()
 {
     Authorization = new[] { new HangFireAuthorizationFilter() }
 });
-RecurringJob.AddOrUpdate(() => Console.WriteLine("Hello world from Hangfire!"), "*/5 * * * *");
+RecurringJob.AddOrUpdate(() => Console.WriteLine("Hello world from Hangfire!"), "*/1 * * * *");
+
+RecurringJob.AddOrUpdate<ProcessOrdersJob>(x => x.Execute(), "*/5 * * * *");
 
 //if (app.Environment.IsDevelopment())
 //{

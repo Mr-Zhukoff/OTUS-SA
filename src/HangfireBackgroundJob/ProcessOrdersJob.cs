@@ -13,28 +13,19 @@ public class ProcessOrdersJob
     private readonly string _topic = "order-events";
     private readonly IOrdersRepository _ordersRepository;
     private readonly IConfiguration _config;
-    private readonly IProducer<string, string> _producer;
     private readonly AuthenticationHeaderValue _authHeader;
     private readonly IMemoryCache _cache;
     private readonly string _authHeaderKey = "authheader";
     private readonly string _billingServiceUrl;
     private readonly string _usersServiceUrl;
 
-    public ProcessOrdersJob(IConfiguration configuration, IMemoryCache cache, IOrdersRepository ordersRepository, IProducer<string, string> producer)
+    public ProcessOrdersJob(IConfiguration configuration, IMemoryCache cache, IOrdersRepository ordersRepository)
     {
         _ordersRepository = ordersRepository;
         _config = configuration;
-        _producer = producer;
         _cache = cache;
-        _topic = _config["Kafka:Topic"];
-        _billingServiceUrl = Environment.GetEnvironmentVariable("BILLINGSVC_URL");
-        if (String.IsNullOrEmpty(_billingServiceUrl))
-            _billingServiceUrl = _config.GetSection("Services:BillingServiceUrl").Get<string>();
-
-        _usersServiceUrl = Environment.GetEnvironmentVariable("USERSSVC_URL");
-        if (String.IsNullOrEmpty(_usersServiceUrl))
-            _usersServiceUrl = _config.GetSection("Services:UsersServiceUrl").Get<string>();
-
+        _billingServiceUrl = Environment.GetEnvironmentVariable("BILLINGSVC_URL") ?? _config["Services:BillingServiceUrl"];
+        _usersServiceUrl = Environment.GetEnvironmentVariable("USERSSVC_URL") ?? _config["Services:UsersServiceUrl"];
         _authHeader = GetAuthHeader().Result; // Добавить кеширование
     }
 
@@ -122,7 +113,7 @@ public class ProcessOrdersJob
                     };
 
                     var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
-                    await _producer.ProduceAsync(_topic, kafkaMessage);
+                    //await _producer.ProduceAsync(_topic, kafkaMessage);
                 }
                 else
                 {
@@ -139,7 +130,7 @@ public class ProcessOrdersJob
                     };
 
                     var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
-                    await _producer.ProduceAsync(_topic, kafkaMessage);
+                    //await _producer.ProduceAsync(_topic, kafkaMessage);
                 }
             }
         }

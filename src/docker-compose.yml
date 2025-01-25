@@ -1,6 +1,8 @@
 services:
   usersservice:
     image: ${DOCKER_REGISTRY-}usersservice
+    depends_on:
+      - usersdb
     build:
       context: .
       dockerfile: UsersService/Dockerfile
@@ -16,6 +18,8 @@ services:
 
   billingservice:
     image: ${DOCKER_REGISTRY-}billingservice
+    depends_on:
+      - billingdb
     build:
       context: .
       dockerfile: BillingService/Dockerfile
@@ -24,6 +28,8 @@ services:
 
   notificationsservice:
     image: ${DOCKER_REGISTRY-}notificationsservice
+    depends_on:
+      - notificationsdb
     build:
       context: .
       dockerfile: NotificationsService/Dockerfile
@@ -32,6 +38,8 @@ services:
 
   ordersservice:
     image: ${DOCKER_REGISTRY-}ordersservice
+    depends_on:
+      - ordersdb
     build:
       context: .
       dockerfile: OrdersService/Dockerfile
