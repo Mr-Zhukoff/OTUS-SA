@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrdersService", "OrdersServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreLogic", "CoreLogic\CoreLogic.csproj", "{70678881-A70A-4407-9EF9-F1273BD7CD1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HangfireService", "HangfireBackgroundJob\HangfireService.csproj", "{4FCE69BB-2FFE-40AA-B7ED-5F5AAD247ED4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70678881-A70A-4407-9EF9-F1273BD7CD1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FCE69BB-2FFE-40AA-B7ED-5F5AAD247ED4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FCE69BB-2FFE-40AA-B7ED-5F5AAD247ED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FCE69BB-2FFE-40AA-B7ED-5F5AAD247ED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FCE69BB-2FFE-40AA-B7ED-5F5AAD247ED4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

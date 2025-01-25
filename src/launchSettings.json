@@ -8,7 +8,9 @@
         "usersservice": "StartDebugging",
         "billingservice": "StartDebugging",
         "notificationsservice": "StartDebugging",
-        "ordersservice": "StartDebugging"
+        "ordersservice": "StartDebugging",
+        "backgroundworkerservice": "StartDebugging",
+        "hangfireservice": "StartDebugging"
       }
     }
   }

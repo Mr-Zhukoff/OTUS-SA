@@ -1,7 +1,7 @@
 ﻿using CoreLogic.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace NotificationsService.Data;
+namespace BackgroundWorkerService.Data;
 
 public class NotificationsDbContext : DbContext
 {

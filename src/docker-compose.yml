@@ -1,6 +1,8 @@
 services:
   usersservice:
     image: ${DOCKER_REGISTRY-}usersservice
+    depends_on:
+      - usersdb
     build:
       context: .
       dockerfile: UsersService/Dockerfile
@@ -16,6 +18,8 @@ services:
 
   billingservice:
     image: ${DOCKER_REGISTRY-}billingservice
+    depends_on:
+      - billingdb
     build:
       context: .
       dockerfile: BillingService/Dockerfile
@@ -24,6 +28,8 @@ services:
 
   notificationsservice:
     image: ${DOCKER_REGISTRY-}notificationsservice
+    depends_on:
+      - notificationsdb
     build:
       context: .
       dockerfile: NotificationsService/Dockerfile
@@ -32,6 +38,8 @@ services:
 
   ordersservice:
     image: ${DOCKER_REGISTRY-}ordersservice
+    depends_on:
+      - ordersdb
     build:
       context: .
       dockerfile: OrdersService/Dockerfile
@@ -42,6 +50,21 @@ services:
       - USERSSVC_URL=http://usersservice:8080
       - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
       - POSTGRES_PASSWORD=12345678
+
+  hangfireservice:
+    image: ${DOCKER_REGISTRY-}hangfireservice
+    build:
+      context: .
+      dockerfile: HangfireBackgroundJob/Dockerfile
+    ports:
+    - "8089:8080"
+    environment:
+      - ORDERS_CONN_STR=Host=ordersdb;Port=5432;Database=orders;Username=pguser;Password=12345678
+      - NOTIFICATIONS_CONN_STR=Host=notificationsdb;Port=5432;Database=notifications;Username=pguser;Password=12345678
+      - KAFKA_URL=kafka:9093
+      - BILLINGSVC_URL=http://billingservice:8080
+      - USERSSVC_URL=http://usersservice:8080
+      - SEQ_URL=http://seq:5341
 
   usersdb:
     image: postgres:17.0
@@ -168,3 +191,4 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
