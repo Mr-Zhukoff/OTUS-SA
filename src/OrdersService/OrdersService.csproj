@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
-    <FileVersion>2025.01.1.4</FileVersion>
+    <FileVersion>2025.01.1.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -35,7 +35,7 @@ public static class NotificationsEndpoints
 
         app.MapPost("/notifications", async (Notification notification, INotificationsRepository notificationsRepository) =>
         {
-            var result = await notificationsRepository.UpdateNotification(notification);
+            var result = await notificationsRepository.CreateNotification(notification);
             return Results.Ok(result);
         });
 
