@@ -45,6 +45,10 @@ services:
       dockerfile: OrdersService/Dockerfile
     ports:
         - "8083:8080"
+    environment:
+      - BILLINGSVC_URL=http://billingservice:8080
+      - USERSSVC_URL=http://usersservice:8080
+      - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
 
   hangfireservice:
     image: ${DOCKER_REGISTRY-}hangfireservice
