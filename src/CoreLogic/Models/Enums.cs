@@ -9,3 +9,11 @@ public enum OrderStatus
     Delivered = 4,
     Cancelled = 5
 }
+
+public enum DeliveryStatus
+{
+    New = 0,
+    InProgress = 1,
+    Delivered = 2,
+    Cancelled = 3
+}

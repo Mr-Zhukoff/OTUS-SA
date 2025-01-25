@@ -10,7 +10,9 @@
         "notificationsservice": "StartDebugging",
         "ordersservice": "StartDebugging",
         "backgroundworkerservice": "StartDebugging",
-        "hangfireservice": "StartDebugging"
+        "hangfireservice": "StartDebugging",
+        "productsservice": "StartDebugging",
+        "deliveryservice": "StartDebugging"
       }
     }
   }
