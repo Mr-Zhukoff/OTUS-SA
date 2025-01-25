@@ -1,4 +1,3 @@
-using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -26,13 +25,6 @@ if (String.IsNullOrEmpty(seqUrl))
 string pgConnStr = Environment.GetEnvironmentVariable("PG_CONN_STR");
 if (String.IsNullOrEmpty(pgConnStr))
     pgConnStr = builder.Configuration.GetConnectionString("PgDb");
-
-var consumerConfig = new ConsumerConfig
-{
-    BootstrapServers = builder.Configuration.GetSection("Kafka:BootstrapServers").Get<string>(),
-    GroupId = "order-consumer",
-    AutoOffsetReset = AutoOffsetReset.Earliest
-};
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  .AddJwtBearer(options =>

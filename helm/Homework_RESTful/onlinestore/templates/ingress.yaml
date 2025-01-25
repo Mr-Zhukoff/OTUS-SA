@@ -49,6 +49,13 @@ spec:
                 name: notificationsservice
                 port:
                   number: 80
+          - path: /hangfire(/|$)(.*)
+            pathType: {{ .Values.ingress.pathType }}
+            backend:
+              service:
+                name: hangfireservice
+                port:
+                  number: 80
           - path: /api(/|$)(.*)
             pathType: {{ .Values.ingress.pathType }}
             backend:

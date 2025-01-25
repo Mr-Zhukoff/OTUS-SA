@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using CoreLogic.Models;
+﻿using CoreLogic.Models;
 using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;

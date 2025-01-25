@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using CoreLogic.Models;
+﻿using CoreLogic.Models;
 using HangfireService.Data;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -112,7 +111,7 @@ public class ProcessOrdersJob
                         CreatedOn = DateTime.UtcNow
                     };
 
-                    var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
+                    //var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
                     //await _producer.ProduceAsync(_topic, kafkaMessage);
                 }
                 else
@@ -129,7 +128,7 @@ public class ProcessOrdersJob
                         CreatedOn = DateTime.UtcNow
                     };
 
-                    var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
+                    //var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
                     //await _producer.ProduceAsync(_topic, kafkaMessage);
                 }
             }

@@ -12,7 +12,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 string ordersConnStr = Environment.GetEnvironmentVariable("ORDERS_CONN_STR");
-string notificationsConnStr = Environment.GetEnvironmentVariable("ORDERS_CONN_STR");
+string notificationsConnStr = Environment.GetEnvironmentVariable("NOTIFICATIONS_CONN_STR");
 string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://seq:5341";
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
@@ -40,9 +40,10 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+app.UseHangfireDashboard("/dashboard", new DashboardOptions()
 {
-    Authorization = new[] { new HangFireAuthorizationFilter() }
+    Authorization = new[] { new HangFireAuthorizationFilter() },
+    PrefixPath = "/hangfire"
 });
 RecurringJob.AddOrUpdate(() => Console.WriteLine("Hello world from Hangfire!"), "*/1 * * * *");
 
