@@ -48,8 +48,9 @@ services:
     environment:
       - BILLINGSVC_URL=http://billingservice:8080
       - USERSSVC_URL=http://usersservice:8080
-      - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
+      - PRODUCTSSVC_URL=http://productsservice:8080
       - SEQ_URL=http://seq:5341
+      - KAFKA_SVC=kafka:9093
 
   productsservice:
     image: ${DOCKER_REGISTRY-}productsservice
@@ -87,11 +88,11 @@ services:
     ports:
     - "8089:8080"
     environment:
-      - ORDERS_CONN_STR=Host=ordersdb;Port=5432;Database=orders;Username=pguser;Password=12345678
-      - NOTIFICATIONS_CONN_STR=Host=notificationsdb;Port=5432;Database=notifications;Username=pguser;Password=12345678
-      - KAFKA_URL=kafka:9093
+      - KAFKA_SVC=kafka:9093
+      - ORDERSSVC_URL=http://ordersservice:8080
       - BILLINGSVC_URL=http://billingservice:8080
       - USERSSVC_URL=http://usersservice:8080
+      - PRODUCTSSVC_URL=http://usersservice:8080
       - SEQ_URL=http://seq:5341
 
   usersdb:
@@ -208,39 +209,25 @@ services:
   #       retries: 10
   #       start_period: 10s
 
-  # zookeeper:
-  #   image: zookeeper:latest
-  #   container_name: zookeeper
-  #   ports:
-  #     - "2181:2181"
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
+  kafka:
+    image: apache/kafka-native
+    ports:
+      - "9092:9092"
+    environment:
+      # Configure listeners for both docker and host communication
+      KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
 
-  # kafka:
-  #   image: apache/kafka-native
-  #   container_name: kafka
-  #   # depends_on:
-  #   #   - zookeeper
-  #   ports:
-  #     - 9092:9092
-  #   environment:
-  #     # Configure listeners for both docker and host communication
-  #     KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
-  #     KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+      # Settings required for KRaft mode
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
 
-  #     # Settings required for KRaft mode
-  #     KAFKA_NODE_ID: 1
-  #     KAFKA_PROCESS_ROLES: broker,controller
-  #     KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-  #     KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
+      # Listener to use for broker-to-broker communication
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
 
-  #     # Listener to use for broker-to-broker communication
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
-
-  #     # Required for a single node cluster
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
+      # Required for a single node cluster
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 

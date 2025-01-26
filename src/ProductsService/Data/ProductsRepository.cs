@@ -13,6 +13,13 @@ public class ProductsRepository(ProductsDbContext context) : IProductsRepository
         await _context.SaveChangesAsync();
         return result.Entity;
     }
+    
+    public async Task<bool> CreateProducts(List<Product> products)
+    {
+        await _context.Products.AddRangeAsync(products);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
     public async Task<bool> DeleteProduct(int productId)
     {

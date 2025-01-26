@@ -24,11 +24,16 @@ public class Order
     [Column("description")]
     public string Description { get; set; }
 
-    [Column("amount")]
-    public decimal Amount { get; set; }
+    [Column("products")]
+    public List<OrderProduct> Products { get; set; }
+
+    [Column("total")]
+    public decimal Total { get; set; }
 
     [Column("state")]
     public OrderStatus Status { get; set; }
+
+
 }
 
 

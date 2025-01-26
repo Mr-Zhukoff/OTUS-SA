@@ -1,4 +1,5 @@
-﻿using CoreLogic.Models;
+﻿using Confluent.Kafka;
+using CoreLogic.Models;
 using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
@@ -7,14 +8,13 @@ using OrdersService.Models;
 using Serilog;
 using System.Net.Http.Headers;
 using System.Reflection;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace OrdersService.Endpoints;
 
 public static class OrdersEndpoints
 {
-    private const string _topic = "orderForm-events";
-
-    public static void AddOrdersEndpoints(this IEndpointRouteBuilder app, IConfiguration config)
+    public static void AddOrdersEndpoints(this IEndpointRouteBuilder app, IConfiguration config, IProducer<string, string> producer)
     {
         app.MapGet("/", [AllowAnonymous] () => "OrderService");
 
@@ -29,13 +29,13 @@ public static class OrdersEndpoints
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
             var order = await ordersRepository.GetOrderById(id);
 
-            if(requestUserId != 0 && order.UserId != requestUserId)
+            if (requestUserId != 0 && order.UserId != requestUserId)
                 return Results.BadRequest("Accessing another user order data is not allowed!");
 
             return Results.Ok(order);
         });
 
-        app.MapPost("/orders", async (UpdateOrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
+        app.MapPost("/orders", async (OrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
             try
             {
@@ -44,6 +44,8 @@ public static class OrdersEndpoints
                 var newOrder = orderForm.ToOrder();
                 newOrder.UserId = requestUserId;
                 newOrder.Status = OrderStatus.New;
+
+                // Проверяем счет
                 Account account;
                 using (var httpClient = new HttpClient())
                 {
@@ -55,19 +57,65 @@ public static class OrdersEndpoints
                     }
                 }
 
-                if(account == null)
+                if (account == null)
                     return Results.BadRequest($"Account {newOrder.AccountId} not found!");
 
-                var result = await ordersRepository.CreateOrder(newOrder);
-                return Results.Ok(result);
+                // Проверяем товары
+                List<Product> products = new List<Product>();
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Headers.Authorization.FirstOrDefault().Replace("Bearer ", ""));
+                    using (var productsResponse = await httpClient.GetAsync($"{Environment.GetEnvironmentVariable("PRODUCTSSVC_URL")}/products"))
+                    {
+                        string response = await productsResponse.Content.ReadAsStringAsync();
+                        products = JsonConvert.DeserializeObject<List<Product>>(response);
+                    }
+                }
+
+                foreach (var orderProduct in newOrder.Products)
+                {
+                    if(products.Where(p => p.Id == orderProduct.ProductId).Count() > 0)
+                        continue;
+                    return Results.BadRequest($"Product with Id:{orderProduct.ProductId} not found!");
+                }
+
+                var createdOrder = await ordersRepository.CreateOrder(newOrder);
+
+                var kafkaMessage = new Message<string, string>
+                {
+                    Value = JsonConvert.SerializeObject(createdOrder)
+                };
+                await producer.ProduceAsync("new-orders", kafkaMessage);
+
+                return Results.Ok(createdOrder);
             }
-            catch (Exception ex) {
+            catch (ProduceException<string, string> ex)
+            {
+                Log.Error(ex, "Publish order error!");
+                return Results.Problem(ex.Message, null, 500, "Error publishing message");
+            }
+            catch (Exception ex)
+            {
                 Log.Error(ex, "Create order error!");
                 return Results.Problem(ex.Message, null, 500, "Error!");
             }
         });
 
-        app.MapPut("/orders/{id:int}", async (int id, UpdateOrderForm userForm, IOrdersRepository ordersRepository, HttpRequest request) =>
+        app.MapPost("/orders/{id:int}/status", async (int id, int status, IOrdersRepository ordersRepository) =>
+        {
+            try
+            {
+                var result = await ordersRepository.SetOrderStatus(id, (OrderStatus)status);
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "SetOrderStatus error!");
+                return Results.Problem(ex.Message, null, 500, "SetOrderStatus error!");
+            }
+        });
+
+        app.MapPut("/orders/{id:int}", async (int id, OrderForm userForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
@@ -77,7 +125,8 @@ public static class OrdersEndpoints
             var result = await ordersRepository.UpdateOrder(userForm.ToOrder(id));
             return Results.Ok(result);
         });
-        app.MapPatch("/orders/{id:int}", async (int id, UpdateOrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
+
+        app.MapPatch("/orders/{id:int}", async (int id, OrderForm orderForm, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
 
@@ -87,6 +136,7 @@ public static class OrdersEndpoints
             var result = await ordersRepository.UpdateOrder(orderForm.ToOrder(id));
             return Results.Ok(result);
         });
+
         app.MapDelete("/orders", [Authorize] async (int id, IOrdersRepository ordersRepository, HttpRequest request) =>
         {
             int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);

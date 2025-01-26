@@ -69,8 +69,8 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         if (order.Description != null)
             currentOrder.Description = order.Description;
 
-        if (order.Amount != 0)
-            currentOrder.Amount = order.Amount;
+        if (order.Total != 0)
+            currentOrder.Total = order.Total;
 
         _context.Orders.Update(currentOrder);
         await _context.SaveChangesAsync();

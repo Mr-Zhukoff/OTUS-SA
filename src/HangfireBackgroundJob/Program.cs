@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using HangfireService;
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 string ordersConnStr = Environment.GetEnvironmentVariable("ORDERS_CONN_STR");
 string notificationsConnStr = Environment.GetEnvironmentVariable("NOTIFICATIONS_CONN_STR");
+string kafkaSvc = Environment.GetEnvironmentVariable("KAFKA_SVC");
 string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://seq:5341";
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
@@ -37,6 +39,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHealthChecks();
+
+var producerConfig = new ProducerConfig
+{
+    BootstrapServers = kafkaSvc,
+    ClientId = "hangfire-producer"
+};
+builder.Services.AddSingleton(new ProducerBuilder<string, string>(producerConfig).Build());
 
 var app = builder.Build();
 

@@ -14,7 +14,7 @@ public static class ProductsEndpoints
     {
         app.MapGet("/", () => "ProductsService");
 
-        app.MapGet("/products", [AllowAnonymous] async (IProductsRepository productsRepository) =>
+        app.MapGet("/products", async (IProductsRepository productsRepository) =>
         {
             var products = await productsRepository.GetAllProducts();
             return Results.Ok(products);
@@ -26,39 +26,35 @@ public static class ProductsEndpoints
             return Results.Ok(product);
         });
 
-        app.MapPost("/products", async (Product product, IProductsRepository productsRepository) =>
+        app.MapPost("/products", async (ProductForm product, IProductsRepository productsRepository) =>
         {
-            var result = await productsRepository.CreateProduct(product);
+            var result = await productsRepository.CreateProduct(product.ToProduct());
             return Results.Ok(result);
         });
 
-        app.MapPut("/products/{id:int}", async (int id, UpdateProductForm notificationsForm, IProductsRepository productsRepository, HttpRequest request) =>
+        app.MapPost("/products/many", async (List<ProductForm> productforms, IProductsRepository productsRepository) =>
         {
-            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
+            var products = new List<Product>();
 
-            if (requestUserId != id)
-                return Results.BadRequest("Modifying another user is not allowed!");
+            foreach (var form in productforms)
+                products.Add(form.ToProduct());
 
+            var result = await productsRepository.CreateProducts(products);
+            return Results.Ok(result);
+        });
+
+        app.MapPut("/products/{id:int}", async (int id, ProductForm notificationsForm, IProductsRepository productsRepository, HttpRequest request) =>
+        {
             var result = await productsRepository.UpdateProduct(notificationsForm.ToProduct(id));
             return Results.Ok(result);
         });
-        app.MapPatch("/products/{id:int}", async (int id, UpdateProductForm userForm, IProductsRepository productsRepository, HttpRequest request) =>
+        app.MapPatch("/products/{id:int}", async (int id, ProductForm userForm, IProductsRepository productsRepository, HttpRequest request) =>
         {
-            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
-
-            if (requestUserId != id)
-                return Results.BadRequest("Modifying another user is not allowed!");
-
             var result = await productsRepository.UpdateProduct(userForm.ToProduct(id));
             return Results.Ok(result);
         });
         app.MapDelete("/products", async (int id, IProductsRepository productsRepository, HttpRequest request) =>
         {
-            int requestUserId = PasswordHasher.GetUserIdFromJwt(request.Headers["Authorization"]);
-
-            if (requestUserId != id)
-                return Results.BadRequest("Deleting another user is not allowed!");
-
             var result = await productsRepository.DeleteProduct(id);
             return Results.Ok(result);
         });
@@ -67,14 +63,14 @@ public static class ProductsEndpoints
         {
             try
             {
-                Log.Information($"Resetting Users DB");
+                Log.Information($"Resetting Products DB");
                 var result = await productsRepository.ResetDb();
                 return Results.Ok(result);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message);
-                return Results.Problem(ex.Message, null, 500, "Register error!");
+                return Results.Problem(ex.Message, null, 500, "Reset Products DB error!");
             }
         });
 

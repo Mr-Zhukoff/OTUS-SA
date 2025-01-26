@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProductsService.Models;
 
-public class UpdateProductForm
+public class ProductForm
 {
     [Required]
     public string Title { get; set; }
@@ -24,7 +24,8 @@ public class UpdateProductForm
             Title = Title,
             Description = Description,
             Quantity = Quantity,
-            Price = Price
+            Price = Price,
+            CreatedOn = DateTime.UtcNow
         };
     }
 }

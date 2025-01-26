@@ -10,5 +10,7 @@ public class OrdersDbContext : DbContext
     }
 
     public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderProduct> Products { get; set; }
+    
 
 }

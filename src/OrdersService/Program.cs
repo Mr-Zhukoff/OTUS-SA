@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,18 +13,15 @@ using OrdersService.Middlewares;
 using Serilog;
 using System.Reflection;
 using System.Text;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
 
-string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL");
-if (String.IsNullOrEmpty(seqUrl))
-    seqUrl = "http://seq.default.svc.cluster.local:5341";
-
-string pgConnStr = Environment.GetEnvironmentVariable("PG_CONN_STR");
-if (String.IsNullOrEmpty(pgConnStr))
-    pgConnStr = builder.Configuration.GetConnectionString("PgDb");
+string seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ??  "http://seq.default.svc.cluster.local:5341";
+string pgConnStr = Environment.GetEnvironmentVariable("PG_CONN_STR") ?? builder.Configuration.GetConnectionString("PgDb");
+var kafkaUrl = Environment.GetEnvironmentVariable("KAFKA_SVC") ?? builder.Configuration["Kafka:BootstrapServers"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  .AddJwtBearer(options =>
@@ -93,6 +91,13 @@ builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 
 builder.Services.AddHealthChecks().AddNpgSql(pgConnStr);
 
+var producerConfig = new ProducerConfig
+{
+    BootstrapServers = kafkaUrl,
+    ClientId = "order-producer"
+};
+builder.Services.AddSingleton(new ProducerBuilder<string, string>(producerConfig).Build());
+
 var app = builder.Build();
 
 //if (app.Environment.IsDevelopment())
@@ -113,6 +118,6 @@ app.MapHealthChecks("hc", new HealthCheckOptions
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-app.AddOrdersEndpoints(app.Services.GetRequiredService<IConfiguration>());
+app.AddOrdersEndpoints(app.Services.GetRequiredService<IConfiguration>(), app.Services.GetRequiredService<IProducer<string, string>>());
 
 app.Run();
