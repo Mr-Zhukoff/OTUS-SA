@@ -59,6 +59,7 @@ services:
     ports:
       - "8084:8080"
     environment:
+      - PG_CONN_STR=Host=productsdb;Port=5432;Database=products;Username=pguser;Password=12345678
       - BILLINGSVC_URL=http://billingservice:8080
       - USERSSVC_URL=http://usersservice:8080
       - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
@@ -72,6 +73,7 @@ services:
     ports:
       - "8085:8080"
     environment:
+      - PG_CONN_STR=Host=deliverydb;Port=5432;Database=deliveries;Username=pguser;Password=12345678
       - BILLINGSVC_URL=http://billingservice:8080
       - USERSSVC_URL=http://usersservice:8080
       - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
@@ -139,6 +141,30 @@ services:
       - ./.postgress/orders:/var/lib/postgresql/data
     ports:
       - 5435:5432
+
+  productsdb:
+    image: postgres:17.0
+    container_name: productsdb
+    environment:
+      - POSTGRES_DB=products
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=12345678
+    volumes:
+      - ./.postgress/products:/var/lib/postgresql/data
+    ports:
+      - 5436:5432
+
+  deliverydb:
+    image: postgres:17.0
+    container_name: deliverydb
+    environment:
+      - POSTGRES_DB=deliveries
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=12345678
+    volumes:
+      - ./.postgress/delivery:/var/lib/postgresql/data
+    ports:
+      - 5437:5432
 
   seq:
     image: datalust/seq:latest
