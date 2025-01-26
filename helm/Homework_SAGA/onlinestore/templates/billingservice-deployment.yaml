@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: billingservice
+  name: billingservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billingservice
+  template:
+    metadata:
+      labels:
+        app: billingservice
+    spec:
+      containers:
+        - image: {{ .Values.billingservice.image.repository }}
+          name: billingservice
+          env:
+          - name: PG_CONN_STR
+            value: "Host=billingdb.default.svc.cluster.local;Port=5432;Database=billing;Username=pguser;Password=P@ssw0rd"
+          - name: SEQ_URL
+            value: "http://seq.default.svc.cluster.local:5341"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: {{ .Values.billingservice.restartPolicy }}

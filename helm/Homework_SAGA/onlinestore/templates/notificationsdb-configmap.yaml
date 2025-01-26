@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notificationsdb-config
+  labels:
+    app: notificationsdb
+data:
+  POSTGRES_DB: notifications
+  POSTGRES_USER: pguser
+  POSTGRES_PASSWORD: P@ssw0rd

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hangfireservice
+  name: hangfireservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hangfireservice
+  template:
+    metadata:
+      labels:
+        app: hangfireservice
+    spec:
+      containers:
+        - image: {{ .Values.hangfireservice.image.repository }}
+          name: hangfireservice
+          env:
+          - name: ORDERS_CONN_STR
+            value: "Host=ordersdb.default.svc.cluster.local;Port=5432;Database=orders;Username=pguser;Password=P@ssw0rd"
+          - name: NOTIFICATIONS_CONN_STR
+            value: "Host=notificationsdb.default.svc.cluster.local;Port=5432;Database=notifications;Username=pguser;Password=P@ssw0rd"
+          - name: SEQ_URL
+            value: "http://seq.default.svc.cluster.local:5341"
+          - name: BILLINGSVC_URL
+            value: "http://billingservice.default.svc.cluster.local"
+          - name: USERSSVC_URL
+            value: "http://userservice.default.svc.cluster.local"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: {{ .Values.hangfireservice.restartPolicy }}

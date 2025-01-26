@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ordersservice
+  name: ordersservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordersservice
+  template:
+    metadata:
+      labels:
+        app: ordersservice
+    spec:
+      containers:
+        - image: {{ .Values.ordersservice.image.repository }}
+          name: ordersservice
+          env:
+          - name: PG_CONN_STR
+            value: "Host=ordersdb.default.svc.cluster.local;Port=5432;Database=orders;Username=pguser;Password=P@ssw0rd"
+          - name: SEQ_URL
+            value: "http://seq.default.svc.cluster.local:5341"
+          - name: BILLINGSVC_URL
+            value: "http://billingservice.default.svc.cluster.local"
+          - name: USERSSVC_URL
+            value: "http://usersservice.default.svc.cluster.local"
+          - name: NOTIFICATIONSSVC_URL
+            value: "http://notificationsservice.default.svc.cluster.local"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: {{ .Values.ordersservice.restartPolicy }}

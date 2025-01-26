@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: userservice
+  name: userservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userservice
+  template:
+    metadata:
+      labels:
+        app: userservice
+    spec:
+      containers:
+        - image: {{ .Values.userservice.image.repository }}
+          name: userservice
+          env:
+          - name: PG_CONN_STR
+            value: "Host=usersdb.default.svc.cluster.local;Port=5432;Database=users_db;Username=pguser;Password=P@ssw0rd"
+          - name: SEQ_URL
+            value: "http://seq.default.svc.cluster.local:5341"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: {{ .Values.userservice.restartPolicy }}
