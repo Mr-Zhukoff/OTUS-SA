@@ -1,6 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CoreLogic.Models;
 
@@ -33,7 +34,13 @@ public class Order
     [Column("state")]
     public OrderStatus Status { get; set; }
 
+    [Column("statusreason")]
+    public string StatusReason { get; set; }
 
+    public override string ToString()
+    {
+        return $"{Id}: {Title} = {Total} Status: {Status}";
+    }
 }
 
 

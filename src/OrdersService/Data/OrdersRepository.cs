@@ -1,5 +1,6 @@
 ﻿using CoreLogic.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace OrdersService.Data;
 
@@ -10,6 +11,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
     {
         var result = await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
+        Log.Information($"Order {result.Entity.Id} has been created");
         return result.Entity;
     }
 
@@ -17,13 +19,13 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
     {
         await _context.Orders.Where(e => e.Id == orderId).ExecuteDeleteAsync();
         await _context.SaveChangesAsync();
+        Log.Information($"Order {orderId} has been deleted");
         return true;
     }
 
     public async Task<List<Order>> GetAllOrders()
     {
         var orders = await _context.Orders.AsNoTracking().ToListAsync();
-
         return orders.ToList();
     }
 
@@ -33,7 +35,6 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
             return new List<Order>();
 
         var orders = await _context.Orders.Where(x => x.UserId == userId).ToListAsync();
-
         return orders.ToList();
     }
 
@@ -74,6 +75,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
 
         _context.Orders.Update(currentOrder);
         await _context.SaveChangesAsync();
+        Log.Information($"Order {order.Id} has been updated");
         return order.Id;
     }
 
@@ -82,6 +84,7 @@ public class OrdersRepository(OrdersDbContext context) : IOrdersRepository
         await _context.Orders.Where(o => o.Id == orderId).ExecuteUpdateAsync(
             t => t.SetProperty(u => u.Status, u => orderStatus));
         await _context.SaveChangesAsync();
+        Log.Information($"Order {orderId} status changed to {orderStatus}");
         return true;
     }
 

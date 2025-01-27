@@ -32,4 +32,9 @@ public class User
     [Column("hash")]
     [SwaggerSchema(ReadOnly = true)]
     public string? PasswordHash { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Id}: {Email}";
+    }
 }

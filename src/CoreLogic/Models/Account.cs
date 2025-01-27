@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
-using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoreLogic.Models;
 
@@ -23,4 +23,9 @@ public class Account
     
     [Column("balance")]
     public decimal Balance { get; set; }
+
+    public override string ToString()
+    {
+        return $"{UserId}: {Number} = {Balance}";
+    }
 }

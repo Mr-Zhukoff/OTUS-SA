@@ -5,9 +5,11 @@ public enum OrderStatus
     New = 0, 
     Processing = 1,
     Paid = 2,
-    Sent = 3,
-    Delivered = 4,
-    Cancelled = 5
+    Reserved = 3,
+    Sent = 4,
+    Delivered = 5,
+    Cancelled = 6,
+    Error = 7
 }
 
 public enum DeliveryStatus

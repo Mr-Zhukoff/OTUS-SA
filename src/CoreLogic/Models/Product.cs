@@ -1,6 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CoreLogic.Models;
 
@@ -23,6 +24,10 @@ public class Product
     [Required]
     public int Quantity { get; set; }
 
+    [Column("reserved")]
+    [Required]
+    public int Reserved { get; set; }
+
     [Column("price")]
     [Required]
     public decimal Price { get; set; }
@@ -30,4 +35,9 @@ public class Product
     [Column("createdon")]
     [Required]
     public DateTime CreatedOn { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Id}: {Title} = {Price}";
+    }
 }

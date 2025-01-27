@@ -19,6 +19,9 @@ public class Transaction
     [Required]
     public int AccountId { get; set; }
 
+    [Column("orderid")]
+    public int OrderId { get; set; }
+    
     [Column("amount")]
     [Required]
     public decimal Amount { get; set; }

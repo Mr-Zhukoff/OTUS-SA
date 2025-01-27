@@ -76,7 +76,7 @@ public static class UsersEndpoints
         {
             try
             {
-                Log.Information($"Login form requested {loginForm.ToString()}");
+                Log.Information($"Login form requested");
                 User user;
                 // Бэкдор для админа
                 if (loginForm.Email == "admin@zhukoff.pro" && loginForm.Password == "P@ssw0rd")
@@ -106,6 +106,8 @@ public static class UsersEndpoints
                 JwtSecurityToken Sectoken = GetSecurityToken(config, user);
 
                 var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+
+                Log.Information($"User {loginForm.Email} logged in");
 
                 return Results.Ok(token);
             }
@@ -138,6 +140,8 @@ public static class UsersEndpoints
                 };
                 user.PasswordHash = PasswordHasher.ComputeHash(registerForm.Password, user.PasswordSalt, config["Auth:Pepper"]);
                 var result = userRepository.CreateUser(user);
+
+                Log.Information($"User {registerForm.Email} registered");
 
                 return Results.Ok(result.Result);
             }

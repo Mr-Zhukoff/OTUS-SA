@@ -1,14 +1,11 @@
 ﻿using Confluent.Kafka;
 using CoreLogic.Models;
-using Hangfire.Server;
-using HangfireService.Data;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Serilog;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Security.Principal;
-using System.Threading;
 using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace HangfireService;
@@ -57,9 +54,8 @@ public class ProcessOrdersJob
             {
                 var consumeResult = _consumer.Consume();
                 if (consumeResult is null)
-                {
                     return;
-                }
+
                 var newOrder = JsonConvert.DeserializeObject<Order>(consumeResult.Message.Value);
                 Log.Information($"Consumed message {consumeResult.Message.Value}");
                 await ProcessNewOrderMessage(newOrder);
@@ -81,8 +77,8 @@ public class ProcessOrdersJob
         try
         {
             Log.Information($"Processing new order {order.Id}");
-            await SetOrderStatus(order.Id, OrderStatus.Processing);
-            
+            order.Status = await SetOrderStatus(order.Id, OrderStatus.Processing);
+
             // Получаем счет
             Account account;
             using (var httpClient = new HttpClient())
@@ -93,87 +89,99 @@ public class ProcessOrdersJob
                     string response = await accountResponse.Content.ReadAsStringAsync();
                     if (accountResponse.IsSuccessStatusCode)
                     {
-                        account = JsonConvert.DeserializeObject<Account>(response);
-                    }
-                    else
-                    {
-                        Log.Error($"Get account request error!\n\r StatusCode:{accountResponse.StatusCode}\n\r {response}");
+                        order.StatusReason = $"Get account request error!\n\r StatusCode:{accountResponse.StatusCode}\n\r {response}";
+                        Log.Error(order.StatusReason);
+                        // Отменяем заказ
+                        await CancelOrder(order);
                         return false;
                     }
+                    account = JsonConvert.DeserializeObject<Account>(response);
                 }
             }
 
             if (account == null)
             {
-                Log.Warning($"Processing order {order.Id} error! Account with Id:{order.Id} not found.");
+                order.StatusReason = $"Processing order {order.Id} error! Account with Id:{order.Id} not found.";
+                Log.Warning(order.StatusReason);
+                await CancelOrder(order);
                 return false;
             }
 
-            if (account.Balance >= order.Total)
+            // Проверяем счет 
+            if (account.Balance < order.Total)
             {
-                int transactionId;
-                // Создаем транзакцию
-                using (var httpClient = new HttpClient())
+                order.StatusReason = $"Insufficient balance on account {account.Number}";
+                Log.Warning(order.StatusReason);
+                // Отменяем заказ
+                await CancelOrder(order);
+                return false;
+            }
+
+            int transactionId;
+            // Создаем транзакцию
+            using (var httpClient = new HttpClient())
+            {
+                var transaction = new Transaction()
                 {
-                    var transaction = new Transaction()
+                    UserId = order.UserId,
+                    AccountId = order.AccountId,
+                    OrderId = order.Id,
+                    Amount = order.Total,
+                    Description = order.Description,
+                    CreatedOn = DateTime.Now
+                };
+                JsonContent content = JsonContent.Create(transaction);
+                httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+                using (var transactionResponse = await httpClient.PostAsync($"{_billingServiceUrl}/transactions", content))
+                {
+                    string response = await transactionResponse.Content.ReadAsStringAsync();
+                    if (!transactionResponse.IsSuccessStatusCode)
                     {
-                        UserId = order.UserId,
-                        AccountId = order.AccountId,
-                        Amount = order.Total,
-                        Description = order.Description,
-                        CreatedOn = DateTime.Now
-                    };
-                    JsonContent content = JsonContent.Create(transaction);
-                    httpClient.DefaultRequestHeaders.Authorization = _authHeader;
-                    using (var transactionResponse = await httpClient.PostAsync($"{_billingServiceUrl}/transactions", content))
+                        Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                        return false;
+                    }
+                    int.TryParse(response, out transactionId);
+                }
+            }
+
+            order.Status = await SetOrderStatus(order.Id, OrderStatus.Paid);
+            Log.Information($"Order {order.Id} is paid with transaction {transactionId}");
+            // Отправляем сообщение об успешной обработке товара 
+            await SendMessage(order.UserId,
+                $"Успешная оплата заказа {order.Title}",
+                $"Здраствуйте! Ваш заказ {order.Title} успешно оплачен.");
+
+            // Резервируем товар
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+                foreach (var product in order.Products)
+                {
+                    using (var productResponse = await httpClient.GetAsync($"{_productsServiceUrl}/products/{product.ProductId}/reserve/{product.Quantity}"))
                     {
-                        string response = await transactionResponse.Content.ReadAsStringAsync();
-                        if (transactionResponse.IsSuccessStatusCode)
+                        string response = await productResponse.Content.ReadAsStringAsync();
+                        if (!productResponse.IsSuccessStatusCode)
                         {
-                            int.TryParse(response, out transactionId);
-                        }
-                        else
-                        {
-                            Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                            order.StatusReason = $"Reserve product {product.ProductId} request error!\n\r StatusCode:{productResponse.StatusCode}\n\r {response}";
+                            order.Status = OrderStatus.Error;
+                            Log.Error(order.StatusReason);
+                            await CancelOrder(order);
                             return false;
                         }
+                        product.IsReserved = true;
                     }
                 }
-
-                await SetOrderStatus(order.Id, OrderStatus.Paid);
-                Log.Information($"Order {order.Id} is paid with transaction {transactionId}");
-
-                // Отправляем сообщение об успешной обработке товара 
-                Log.Information($"Sending order {order.Id} success payment notification");
-
-                var notification = new Notification()
-                {
-                    UserId = account.UserId,
-                    Title = $"Успешная оплата заказа {order.Title}",
-                    Body = $"Здраствуйте! Ваш заказ {order.Title} успешно оплачен.",
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
-                await _producer.ProduceAsync(_notificationsTopic, kafkaMessage);
             }
-            else
-            {
-                // Отменяем заказ
-                await SetOrderStatus(order.Id, OrderStatus.Cancelled);
-                Log.Information($"Insufficient balance on account {account.Id}");
-                // Отправляем сообщение о недостатке баланса
-                var notification = new Notification()
-                {
-                    UserId = account.UserId,
-                    Title = $"Недостаточно средств для оплаты заказа {order.Title}",
-                    Body = $"Здраствуйте! К сожалению, на вашем счете {account.Number} недостаточно недостаточно средств для оплаты заказа {order.Title}.",
-                    CreatedOn = DateTime.UtcNow
-                };
+            order.Status = await SetOrderStatus(order.Id, OrderStatus.Reserved);
+            await SendMessage(order.UserId,
+                $"Товар для заказа {order.Title} зарезервирован",
+                $"Здраствуйте! Товар для заказа {order.Title} зарезервирован");
 
-                var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
-                await _producer.ProduceAsync(_notificationsTopic, kafkaMessage);
-            }
+            // Резервируем доставку
+
+
+
+
             return true;
         }
         catch (Exception ex)
@@ -183,23 +191,37 @@ public class ProcessOrdersJob
         }
     }
 
-    private async Task<bool> SetOrderStatus(int orderId, OrderStatus status)
+    private async Task SendMessage(int userId, string title, string body)
+    {
+        var notification = new Notification()
+        {
+            UserId = userId,
+            Title = title,
+            Body = body,
+            CreatedOn = DateTime.UtcNow
+        };
+
+        var kafkaMessage = new Message<string, string> { Value = JsonConvert.SerializeObject(notification) };
+        await _producer.ProduceAsync(_notificationsTopic, kafkaMessage);
+    }
+
+    private async Task<OrderStatus> SetOrderStatus(int orderId, OrderStatus status, string reason = "")
     {
         using (var httpClient = new HttpClient())
         {
             httpClient.DefaultRequestHeaders.Authorization = _authHeader;
-            JsonContent content = JsonContent.Create(status);
-            using (var accountResponse = await httpClient.PostAsync($"{_ordersServiceUrl}/orders/{orderId}/status", content))
+            JsonContent content = JsonContent.Create(reason);
+            using (var accountResponse = await httpClient.PostAsync($"{_ordersServiceUrl}/orders/{orderId}/status/{(int)status}", content))
             {
                 string response = await accountResponse.Content.ReadAsStringAsync();
                 if (accountResponse.IsSuccessStatusCode)
                 {
-                    return true;
+                    return status;
                 }
                 else
                 {
                     Log.Error($"Get account request error!\n\r StatusCode:{accountResponse.StatusCode}\n\r {response}");
-                    return false;
+                    return OrderStatus.Error;
                 }
             }
         }
@@ -241,5 +263,30 @@ public class ProcessOrdersJob
             }
         }
         return authHeader;
+    }
+
+    private async Task CancelOrder(Order order)
+    {
+        switch (order.Status)
+        {
+            case OrderStatus.New:
+                break;
+            case OrderStatus.Processing:
+
+                order.Status = await SetOrderStatus(order.Id, OrderStatus.Cancelled, order.StatusReason);
+                // Отправляем сообщение о недостатке баланса
+                await SendMessage(order.UserId,
+                    $"Недостаточно средств для оплаты заказа {order.Title}",
+                    $"Здраствуйте! К сожалению, на вашем счете {order.AccountId} недостаточно недостаточно средств для оплаты заказа {order.Title}.");
+                break;
+            case OrderStatus.Paid:
+                break;
+            case OrderStatus.Sent:
+                break;
+            case OrderStatus.Delivered:
+                break;
+            default:
+                break;
+        }
     }
 }

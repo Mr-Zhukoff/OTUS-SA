@@ -1,5 +1,4 @@
 ﻿using CoreLogic.Models;
-using CoreLogic.Security;
 using Microsoft.AspNetCore.Authorization;
 using ProductsService.Data;
 using ProductsService.Models;
@@ -20,6 +19,22 @@ public static class ProductsEndpoints
             return Results.Ok(products);
         });
 
+        app.MapGet("/products/many/{ids:string}", async (string ids, IProductsRepository productsRepository) =>
+        {
+            List<Product> products = new List<Product>();
+
+            foreach(string stringid in ids.Split(','))
+            {
+                int id;
+                if(int.TryParse(stringid, out id))
+                {
+                    var product = await productsRepository.GetProductById(id);
+                    products.Add(product);
+                }
+            }
+            return Results.Ok(products);
+        });
+
         app.MapGet("/products/{id:int}", async (int id, IProductsRepository productsRepository) =>
         {
             var product = await productsRepository.GetProductById(id);
@@ -29,6 +44,20 @@ public static class ProductsEndpoints
         app.MapPost("/products", async (ProductForm product, IProductsRepository productsRepository) =>
         {
             var result = await productsRepository.CreateProduct(product.ToProduct());
+            return Results.Ok(result);
+        });
+
+        app.MapPost("/products/{id:int}/reserve/{qty:int}", async (int id, int qty, IProductsRepository productsRepository) =>
+        {
+            var product = await productsRepository.GetProductById(id);
+
+            if(product.Quantity < qty)
+                return Results.BadRequest("Insufficient quantity for reserve!");
+
+            product.Reserved += qty;
+            product.Quantity -= qty;
+
+            var result = await productsRepository.UpdateProduct(product);
             return Results.Ok(result);
         });
 
