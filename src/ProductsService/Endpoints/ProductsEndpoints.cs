@@ -19,21 +19,21 @@ public static class ProductsEndpoints
             return Results.Ok(products);
         });
 
-        app.MapGet("/products/many/{ids:string}", async (string ids, IProductsRepository productsRepository) =>
-        {
-            List<Product> products = new List<Product>();
+        //app.MapGet("/products/many/{ids:string}", async (string ids, IProductsRepository productsRepository) =>
+        //{
+        //    List<Product> products = new List<Product>();
 
-            foreach(string stringid in ids.Split(','))
-            {
-                int id;
-                if(int.TryParse(stringid, out id))
-                {
-                    var product = await productsRepository.GetProductById(id);
-                    products.Add(product);
-                }
-            }
-            return Results.Ok(products);
-        });
+        //    foreach(string stringid in ids.Split(','))
+        //    {
+        //        int id;
+        //        if(int.TryParse(stringid, out id))
+        //        {
+        //            var product = await productsRepository.GetProductById(id);
+        //            products.Add(product);
+        //        }
+        //    }
+        //    return Results.Ok(products);
+        //});
 
         app.MapGet("/products/{id:int}", async (int id, IProductsRepository productsRepository) =>
         {

@@ -23,6 +23,7 @@ public class ProcessOrdersJob
     private readonly string _usersServiceUrl;
     private readonly string _productsServiceUrl;
     private readonly string _ordersServiceUrl;
+    private readonly string _deliveryServiceUrl;
 
     public ProcessOrdersJob(IConfiguration configuration, IMemoryCache cache, IProducer<string, string> producer)
     {
@@ -32,12 +33,14 @@ public class ProcessOrdersJob
         _billingServiceUrl = Environment.GetEnvironmentVariable("BILLINGSVC_URL") ?? _config["Services:BillingServiceUrl"];
         _usersServiceUrl = Environment.GetEnvironmentVariable("USERSSVC_URL") ?? _config["Services:UsersServiceUrl"];
         _productsServiceUrl = Environment.GetEnvironmentVariable("PRODUCTSSVC_URL") ?? _config["Services:ProductsServiceUrl"];
+        _deliveryServiceUrl = Environment.GetEnvironmentVariable("DELIVERYSVC_URL") ?? _config["Services:DeliveryServiceUrl"];
         _authHeader = GetAuthHeader().Result; // Добавить кеширование
         var consumerConfig = new ConsumerConfig
         {
             BootstrapServers = Environment.GetEnvironmentVariable("KAFKA_URL") ?? _config["Kafka:BootstrapServers"],
             GroupId = "ProcessOrdersConsumerGroup",
-            AutoOffsetReset = AutoOffsetReset.Earliest
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            AllowAutoCreateTopics = true
         };
         _consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build();
         _producer = producer;
@@ -87,7 +90,7 @@ public class ProcessOrdersJob
                 using (var accountResponse = await httpClient.GetAsync($"{_billingServiceUrl}/accounts/{order.AccountId}"))
                 {
                     string response = await accountResponse.Content.ReadAsStringAsync();
-                    if (accountResponse.IsSuccessStatusCode)
+                    if (!accountResponse.IsSuccessStatusCode)
                     {
                         order.StatusReason = $"Get account request error!\n\r StatusCode:{accountResponse.StatusCode}\n\r {response}";
                         Log.Error(order.StatusReason);
@@ -178,10 +181,31 @@ public class ProcessOrdersJob
                 $"Здраствуйте! Товар для заказа {order.Title} зарезервирован");
 
             // Резервируем доставку
-
-
-
-
+            using (var httpClient = new HttpClient())
+            {
+                var delivery = new Delivery()
+                {
+                    UserId = order.UserId,
+                    Title = order.Title,
+                    Address = order.Address,
+                    OrderId = order.Id,
+                    Status = DeliveryStatus.New,
+                    Description = order.Description,
+                    CreatedOn = DateTime.Now
+                };
+                JsonContent content = JsonContent.Create(delivery);
+                httpClient.DefaultRequestHeaders.Authorization = _authHeader;
+                using (var deliveryResponse = await httpClient.PostAsync($"{_deliveryServiceUrl}/deliveries", content))
+                {
+                    string response = await deliveryResponse.Content.ReadAsStringAsync();
+                    if (!deliveryResponse.IsSuccessStatusCode)
+                    {
+                        Log.Error($"Create delivery request error!\n\r StatusCode:{deliveryResponse.StatusCode}\n\r {response}");
+                        return false;
+                    }
+                    int.TryParse(response, out transactionId);
+                }
+            }
             return true;
         }
         catch (Exception ex)
@@ -256,7 +280,7 @@ public class ProcessOrdersJob
                     }
                     else
                     {
-                        Log.Error($"Create transaction request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
+                        Log.Error($"GetAuthHeader request error!\n\r StatusCode:{transactionResponse.StatusCode}\n\r {response}");
                         return null;
                     }
                 }
@@ -272,7 +296,6 @@ public class ProcessOrdersJob
             case OrderStatus.New:
                 break;
             case OrderStatus.Processing:
-
                 order.Status = await SetOrderStatus(order.Id, OrderStatus.Cancelled, order.StatusReason);
                 // Отправляем сообщение о недостатке баланса
                 await SendMessage(order.UserId,
@@ -280,13 +303,33 @@ public class ProcessOrdersJob
                     $"Здраствуйте! К сожалению, на вашем счете {order.AccountId} недостаточно недостаточно средств для оплаты заказа {order.Title}.");
                 break;
             case OrderStatus.Paid:
+                order.Status = await SetOrderStatus(order.Id, OrderStatus.Cancelled, order.StatusReason);
+                // Отправляем сообщение 
+                await SendMessage(order.UserId,
+                    $"Не удалось зарезервировать товар для заказа {order.Title}",
+                    $"Здраствуйте! К сожалению, не удалось зарезервировать товар для вашего заказа {order.Title}.");
+                break;
+            case OrderStatus.Reserved:
+                order.Status = await SetOrderStatus(order.Id, OrderStatus.Cancelled, order.StatusReason);
+                await SendMessage(order.UserId,
+                    $"Не можем отправить заказа {order.Title}",
+                    $"Здраствуйте! К сожалению, мы не можем отправить ваш заказ {order.Title}.");
                 break;
             case OrderStatus.Sent:
+                order.Status = await SetOrderStatus(order.Id, OrderStatus.Cancelled, order.StatusReason);
                 break;
             case OrderStatus.Delivered:
                 break;
+            case OrderStatus.Error:
+                order.Status = await SetOrderStatus(order.Id, OrderStatus.Error, order.StatusReason);
+                // Отправляем сообщение о недостатке баланса
+                await SendMessage(order.UserId,
+                    $"Ошибка обработки заказа {order.Title}",
+                    $"Здраствуйте! К сожалению, при обработке заказа {order.Title} произошла ошибка. Заказ отменен.");
+                break;
             default:
                 break;
+                return;
         }
     }
 }

@@ -17,6 +17,9 @@ public class OrderForm
     public string Description { get; set; }
 
     [Required]
+    public string Address { get; set; }
+
+    [Required]
     public List<OrderProductForm> ProductForms { get; set; }
 
     public override string ToString()
@@ -32,6 +35,8 @@ public class OrderForm
             AccountId = AccountId,
             Title = Title,
             Description = Description,
+            Address = Address,
+            Status = OrderStatus.New,
             Products = new List<OrderProduct>()
         };
         decimal totalAmount = 0.0M;

@@ -93,6 +93,7 @@ services:
       - BILLINGSVC_URL=http://billingservice:8080
       - USERSSVC_URL=http://usersservice:8080
       - PRODUCTSSVC_URL=http://productsservice:8080
+      - NOTIFICATIONSSVC_URL=http://notificationsservice:8080
       - SEQ_URL=http://seq:5341
 
   usersdb:

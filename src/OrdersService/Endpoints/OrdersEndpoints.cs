@@ -43,7 +43,6 @@ public static class OrdersEndpoints
 
                 var newOrder = orderForm.ToOrder();
                 newOrder.UserId = requestUserId;
-                newOrder.Status = OrderStatus.New;
 
                 // Проверяем счет
                 Account account;

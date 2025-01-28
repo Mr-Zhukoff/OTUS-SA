@@ -56,7 +56,9 @@ app.UseHangfireDashboard("/dashboard", new DashboardOptions()
 });
 RecurringJob.AddOrUpdate(() => Console.WriteLine("Hello world from Hangfire!"), "*/1 * * * *");
 
-RecurringJob.AddOrUpdate<ProcessOrdersJob>(x => x.Execute(), "*/5 * * * *");
+RecurringJob.AddOrUpdate<ProcessOrdersJob>(x => x.Execute(), "*/3 * * * *");
+
+RecurringJob.AddOrUpdate<ProcessNotificationsJob>(x => x.Execute(), "*/5 * * * *");
 
 //if (app.Environment.IsDevelopment())
 //{
